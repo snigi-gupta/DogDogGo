@@ -75,8 +75,13 @@ WSGI_APPLICATION = 'political_search_engine.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'djongo',
+        'NAME': os.environ.get('MONGO_DB_NAME'),
+        'AUTH_SOURCE': os.environ.get('MONGO_DB_NAME'),
+        'USER': os.environ.get('MONGO_DB_USER'),
+        'PASSWORD': os.environ.get('MONGO_DB_PASSWORD'),
+        'HOST': os.environ.get('MONGO_DB_HOST'),
+        'PORT': 27017, #os.environ.get('MONGO_DB_PORT'),
     }
 }
 
