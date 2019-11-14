@@ -1,0 +1,13 @@
+# Ignore virtual environment
+venv/
+
+#Ignore Python byte code cache
+*.pyc
+__pycache__
+.cache
+
+# Ignore stupid .DS_Store
+.DS_Store
+
+# Ignore PyCharm files
+.idea/
