@@ -1,0 +1,3 @@
+git branch
+git checkout -b <branch name>
+git checkout <branch>
