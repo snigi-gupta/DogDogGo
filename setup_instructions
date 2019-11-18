@@ -1,0 +1,11 @@
+# install and setup Node and NPM
+# this is the easiest way to install the latest version of NPM
+cd /tmp/
+curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh -o install_nvm.sh
+nvm install --lts
+
+# cd to your project directory
+pip install --upgrade pip
+pip install -r requirements.txt
+
+npm install
