@@ -9,3 +9,6 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 npm install
+
+# XNOTE: create binaries later
+./node_modules/.bin/webpack --config webpack.config.js
