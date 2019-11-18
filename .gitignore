@@ -11,3 +11,10 @@ __pycache__
 
 # Ignore PyCharm files
 .idea/
+
+# Node modules and lock files
+node_modules/
+package-lock.json
+webpack-stats.json
+
+political_search_engine/static/bundles/
