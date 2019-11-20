@@ -26,4 +26,8 @@ pip install -r requirements.txt
 npm install
 
 # XNOTE: create binaries later
-./node_modules/.bin/webpack --config webpack.config.js
+./node_modules/.bin/webpack --config webpack.config.js --watch
+# the watch flag is to keep the server running to pick up changes made in dev env. DON'T USE IT IN PRODUCTION
+
+# for running the django server
+python manage.py runserver
