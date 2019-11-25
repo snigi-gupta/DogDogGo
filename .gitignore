@@ -20,3 +20,6 @@ webpack-stats.json
 political_search_engine/static/bundles/*
 #Ignore migration files
 **/migrations/*
+
+#Ignore experiments folder
+experiments/*
