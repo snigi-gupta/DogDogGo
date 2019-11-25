@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 
-module.exports => {
+module.exports = {
 	mode: 'development', // hardcoding dev mode for now. Will add hot reloading when needed.
 	context: __dirname,
 	entry: './assets/js/index',

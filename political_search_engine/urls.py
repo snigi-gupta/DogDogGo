@@ -19,8 +19,11 @@ from django.conf.urls import url
 from django.views import generic
 
 urlpatterns = [
-		url(r'^$',generic.TemplateView.as_view(template_name='index.html')),
 		# We should add authentication in case of api endpoints
     path('api/search/', include('search.urls')),
     path('admin/', admin.site.urls),
+		url(r'^$', generic.TemplateView.as_view(template_name='index.html')),
+		url('analytics/', generic.TemplateView.as_view(template_name='index.html')),
+		url('search/', generic.TemplateView.as_view(template_name='index.html')),
+		url('about/', generic.TemplateView.as_view(template_name='index.html')),
 ]
