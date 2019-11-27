@@ -1,0 +1,50 @@
+.align-right {
+	float: right;
+}
+.tweet-card {
+	margin-bottom: 1.2rem;
+	border: 1px solid;
+	border-color: rgb(230, 236, 240);
+	padding: 1rem;
+}
+.tweet-card:hover {
+	background-color: rgb(230, 236, 240);
+}
+.tweet-card-text {
+	font-size: 1.8rem;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+}
+.verified-circle {
+	font-size: 1.4rem;
+	color: #00acee;
+}
+.text-bold {
+	font-weight: bold;
+}
+.text-grey {
+	color: gray;
+}
+.sentiment-angry {
+	color: #f64d52;
+}
+.sentiment-happy {
+	color: #90ee90;
+}
+.sentiment-neutral {
+	color: orange;
+}
+.tweet-card-quicklinks {
+	padding-top: 1rem;
+	text-transform: capitalize;
+}
+.tweet-card-more-details {
+	padding-top: 1rem;
+	text-align: center;
+}
+.img-46 {
+    width: 46px !important;
+    height: 46px !important;
+}
+.img-rounded {
+    border-radius: 2.1rem;
+}
