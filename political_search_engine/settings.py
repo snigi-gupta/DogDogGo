@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'webpack_loader'
 ]
 
@@ -102,7 +103,7 @@ DATABASES = {
         'USER': os.environ.get('MONGO_DB_USER'),
         'PASSWORD': os.environ.get('MONGO_DB_PASSWORD'),
         'HOST': os.environ.get('MONGO_DB_HOST'),
-        'PORT': 27017, #os.environ.get('MONGO_DB_PORT'),
+        'PORT': 27017,
     }
 }
 
