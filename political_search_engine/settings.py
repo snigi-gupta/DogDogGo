@@ -38,14 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-		'webpack_loader'
+    'webpack_loader'
 ]
 
+THIRD_PARTY_APPS = (
+    'rest_framework',
+)
+
 WEBPACK_LOADER = {
-	'DEFAULT': {
-		'BUNDLE_DIR_NAME': 'bundles/',
-		'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
-	}
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    }
 }
 
 STATICFILES_DIRS = (
@@ -79,6 +83,10 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+
+}
 
 WSGI_APPLICATION = 'political_search_engine.wsgi.application'
 
