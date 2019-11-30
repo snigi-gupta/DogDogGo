@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
+from .views import ListQueryView
 
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', ListQueryView.as_view(), name='index'),
 ]
