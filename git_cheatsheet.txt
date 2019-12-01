@@ -51,7 +51,7 @@ git stash
 git stash pop
 
 #reset HEAD
-git reset HEAD
+git reset HEAD <filename>
 
 
 #how to commit changes to git local branch
@@ -71,3 +71,4 @@ git reset HEAD
 #merge changes of local git branch with development git branch: git merge <branchname> (ex: git merge mydev)
 #check status: git status
 #push changes to development branch: git push <remotename> <branchname> (ex: git push raunaq dev)
+#delete your branch now that the changes are merged: git branch -d <branchname> (ex: git branch -d mydev)
