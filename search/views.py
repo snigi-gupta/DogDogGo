@@ -9,6 +9,7 @@ import json
 import urllib.request
 import re
 from urllib.parse import quote
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Create your views here.
 # def index(request):
@@ -16,6 +17,19 @@ from urllib.parse import quote
 
 
 class SearchQueryView(APIView):
+    def sentiment_analysis(self, docs):
+        analyser = SentimentIntensityAnalyzer()
+        for tweet in docs:
+            text = tweet['full_text']
+            sentiment = analyser.polarity_scores(text)
+            if sentiment['compound'] < -0.1:
+                tweet['sentiment'] = -1
+            elif sentiment['compound'] > 0.2:
+                tweet['sentiment'] = 1
+            else:
+                tweet['sentiment'] = 0
+        return docs
+    
     def get(self, request):
         core_name = "DogDogGo"
         localhost = "http://3.19.188.244:8983/solr/"
