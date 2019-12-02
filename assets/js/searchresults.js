@@ -122,9 +122,16 @@ class SearchResults extends React.Component {
 							</div>
 						</div>
 						<div className="row tweet-card-more-details">
-							Detailed Analysis
-							{'   '}
-							<FontAwesomeIcon icon={faChevronRight}/>
+							<div className="col-md-6">
+								Detailed Analysis
+								{'   '}
+								<FontAwesomeIcon icon={faChevronRight}/>
+							</div>
+							<div className="col-md-6">
+								More Like This
+								{'   '}
+								<FontAwesomeIcon icon={faChevronRight}/>
+							</div>
 						</div>
 					</div>
 					<div className="col-md-1">
@@ -241,6 +248,10 @@ class SearchResults extends React.Component {
 			]}
 			layout={{width: 480, height: 360, title: 'Locations'}}
 		/>
+	}
+	processTexts(tweet, entities, highlights) {
+
+	
 	}
 	render() {
 		const { loading, pageCount } = this.state

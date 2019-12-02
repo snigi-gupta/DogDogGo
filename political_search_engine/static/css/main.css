@@ -127,3 +127,28 @@
 	margin-left: -8rem;
 	border-color: rgb(230, 236, 240);
 }
+.center-dom {
+	clear: both;
+	margin: 0 auto;
+}
+.ddg-icon {
+	font-size: 18rem;
+	border: 6px solid aliceblue;
+	border-radius: 9rem;
+	padding: 2rem;
+	color: #00acee;
+}
+.text-center {
+	text-align: center;
+}
+.search-icon {
+	position: absolute;
+	top: 0.8rem;
+	font-size: 2rem;
+	left: 2.5rem;
+	font-weight: normal;
+	color: #999;
+}
+.search-box {
+	padding-left: 3.5rem;
+}
