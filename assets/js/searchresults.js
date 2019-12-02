@@ -43,7 +43,7 @@ class SearchResults extends React.Component {
 		this.handleSearchSubmit = this.handleSearchSubmit.bind(this)
 	}
 	componentDidMount() {
-		this.fetchTweets()
+		//this.fetchTweets()
 	}
 	fetchTweets() {
 		// send query results later
@@ -51,6 +51,7 @@ class SearchResults extends React.Component {
 		actions.fetchTweets({limit: 25, offset: 0})
 			.then((res) => {
 				console.log(res)
+				/*
 				let data = res.data
 				let tweets = data.map((tweet) => {
 					return {
@@ -65,7 +66,9 @@ class SearchResults extends React.Component {
 						userProfileImage: 'https://pbs.twimg.com/profile_images/1097820307388334080/9ddg5F6v_normal.png'
 					}
 				})
-				this.setState({tweets: tweets, loading: false})
+
+				 */
+				this.setState({tweets: [], loading: false})
 			})
 			.catch((res) => {
 				console.log(res)
