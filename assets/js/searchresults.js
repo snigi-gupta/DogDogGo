@@ -217,7 +217,15 @@ class SearchResults extends React.Component {
 	}
 	handleSearchSubmit(event) {
 		event.preventDefault()
-		console.log(data)
+		const { search } = this.state
+		const { actions } = this.props
+		actions.fetchTweets({limit: 25, offset: 0, search: search})
+			.then(res => {
+				console.log(res)
+			})
+			.catch(res => {
+				console.log(res)
+			})
 	}
 	handleSearchChange(event) {
 		this.setState({search: event.target.value})
