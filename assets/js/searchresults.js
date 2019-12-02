@@ -13,11 +13,15 @@ import {
 	faBook,
 	faReply,
 	faChartArea,
+	faChevronLeft,
 	faChevronRight,
 	faNewspaper
 } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment'
 import ExternalImage from 'react-external-image'
+import ReactPaginate from 'react-paginate'
+import Select from 'react-select';
+import Plot from 'react-plotly.js';
 
 const sentimentEmoticonHash = {
 	positive: {icon: faSmileBeam, classname: 'sentiment-happy'},
@@ -30,8 +34,13 @@ class SearchResults extends React.Component {
 		super(props)
 		this.state = {
 			tweets: [],
-			loading: false
+			loading: false,
+			pageCount: 1,
+			search: ''
 		}
+		this.handlePageClick = this.handlePageClick.bind(this)
+		this.handleSearchChange = this.handleSearchChange.bind(this)
+		this.handleSearchSubmit = this.handleSearchSubmit.bind(this)
 	}
 	componentDidMount() {
 		this.fetchTweets()
@@ -39,7 +48,7 @@ class SearchResults extends React.Component {
 	fetchTweets() {
 		// send query results later
 		const { actions } = this.props
-		actions.fetchTweets()
+		actions.fetchTweets({limit: 25, offset: 0})
 			.then((res) => {
 				console.log(res)
 				let data = res.data
@@ -124,8 +133,111 @@ class SearchResults extends React.Component {
 			</div>
 		})
 	}
+	handlePageClick(data) {
+		console.log(data)
+	}
+	filters() {
+		let pois = [
+			{ value: 'BarackObama', label: 'Barack Obama'},
+			{ value: 'BernieSanders', label: 'Bernie Sanders'},
+		]
+		let locations = [
+			{ value: 'New York', label: 'New York'},
+			{ value: 'New Delhi', label: 'New Delhi'},
+			{ value: 'Vermont', label: 'Vermont'},
+		]
+		let hashtags = [
+			{value: 'metoo', label: '#metoo'},
+			{value: 'trump', label: '#Trump'},
+			{value: 'impeachtrump', label: '#ImpeachTrump'},
+		]
+		return <div className="filter-box">
+			<h2 style={{textAlign: 'center'}}>
+				FILTERS
+			</h2>
+			<div>
+				<form>
+					<div className="form form-group">
+						<label htmlFor='poi'>Person of Interests</label>
+						<Select
+							isMulti={true}
+							className="basic-single"
+							classNamePrefix="select"
+							isClearable={true}
+							name="poi"
+							options={pois}
+						/>
+					</div>
+					<div className="form form-group">
+						<label htmlFor='poi'>Locations</label>
+						<Select
+							isMulti={true}
+							className="basic-single"
+							classNamePrefix="select"
+							isClearable={true}
+							name="poi"
+							options={locations}
+						/>
+					</div>
+					<div className="form form-group">
+						<label htmlFor='poi'>Hashtags</label>
+						<Select
+							isMulti={true}
+							className="basic-single"
+							classNamePrefix="select"
+							isClearable={true}
+							name="poi"
+							options={hashtags}
+						/>
+					</div>
+					<div className="row" style={{textAlign: 'center'}}>
+						<button className="btn btn-info" style={{width: '10rem'}}>
+							Filter
+						</button>
+						<button className="btn btn-default" style={{width: '10rem', marginLeft: '3rem'}}>
+							Clear
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+	searchBox() {
+		const { search } = this.state
+		return <div className="row">
+			<form onSubmit={this.handleSearchSubmit}>
+				<div className="form form-group">
+					<input name="search" type="text" className="form-control" value={search} onChange={this.handleSearchChange}/>
+				</div>
+			</form>
+		</div>
+	}
+	handleSearchSubmit(event) {
+		event.preventDefault()
+		console.log(data)
+	}
+	handleSearchChange(event) {
+		this.setState({search: event.target.value})
+	}
+	analytics() {
+		return <Plot
+			data={[
+			{
+				x: [1, 2, 3],
+				y: [2, 6, 3],
+				type: 'scatter',
+				mode: 'lines+markers',
+				marker: {color: 'red'},
+			},
+			{type: 'bar', x: [1, 2, 3], y: [2, 5, 3]},
+			]}
+			layout={{width: 480, height: 360, title: 'Locations'}}
+		/>
+	}
 	render() {
-		const { loading } = this.state
+		const { loading, pageCount } = this.state
+		const { match } = this.props
+		let currentpage = parseInt(match && match.params.currentpage) || 0
 		if (loading) {
 			return <div style={{textAlign: 'center'}}>
 				LOADING
@@ -133,16 +245,35 @@ class SearchResults extends React.Component {
 		} else {
 			return <div>
 				<div className="row">
-					<div className="col-md-2">
+					<div className="col-md-offset-1 col-md-2">
+						{ this.filters() }
 					</div>
-					<div className="col-md-6">
-						{ this.searchElements() }
+					<div className="col-md-5">
+						{ this.searchBox() }
+						<div className="row">
+							{ this.searchElements() }
+						</div>
 					</div>
 					<div className="col-md-4">
+						{ this.analytics() }
+						{ this.analytics() }
 					</div>
 				</div>
-				<div>
-					{/* pagination code later */}
+				<div className="paginate bv-pagination">
+					<ReactPaginate
+						previousLabel={<FontAwesomeIcon icon={faChevronLeft} className="picon chev-left"/>}
+						nextLabel={<FontAwesomeIcon icon={faChevronRight} className="picon chev-right"/>}
+						breakLabel={<a>...</a>}
+						pageCount={2}
+						marginPagesDisplayed={2}
+						pageRangeDisplayed={5}
+						onPageChange={this.handlePageClick}
+						activeClassName={"active"}
+						previousClassName={"active-arrow"}
+						nextClassName={'active-arrow'}
+						disabledClassName={'disabled'}
+						forcePage={currentpage}
+					/>
 				</div>
 			</div>
 		}

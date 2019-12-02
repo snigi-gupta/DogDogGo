@@ -7,11 +7,13 @@ import Header from './header'
 
 class App extends React.Component {
 	render() {
+		console.log(this.props.match)
 		return <div>
 			<Header />
 			<Switch>
 				<Route exact path='/' component={Search} />
 				<Route exact path='/search' component={SearchResults} />
+				<Route exact path='/search/p/:currentpage?' component={SearchResults} />
 				<Route exact path='/analysis' component={Analytics} />
 			</Switch>
 		</div>
