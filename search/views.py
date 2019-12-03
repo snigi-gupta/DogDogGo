@@ -39,6 +39,7 @@ import random
 # def index(request):
     # return HttpResponse("Hello, world. You're at the search index.")
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class SearchQueryView(APIView):
 	def sentiment_analysis(self, docs):
@@ -55,16 +56,67 @@ class SearchQueryView(APIView):
 		return docs
 	
 	def get(self, request):
-		BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-		SENTIMENTS = ['positive', 'negative', 'neutral']
-		f = open(f'{BASE_DIR}/tweets/BarackObama.json')
-		data = json.loads(f.read())
-		data = data[:25]
-		for i in range(0, len(data)):
-			data[i]['sentiment'] = random.choice(SENTIMENTS)
-			data[i]['topic'] = 'dummy'
-			data[i]['impact'] = {'articles': random.randint(0, 50), 'replies': random.randint(0, 50)}
-		return JsonResponse(data, safe=False)
+		inurl = "http://18.191.146.199:8983/solr/DogDogGo/select?&defType=edismax&fl=*&hl.fl=full_text&hl.simple.post=%3C%2Fspan%3E&hl.simple.pre=%3Cspan%20class%3D%27tweet-hl%27%3E&hl=on&pf=processed_text%5E2&ps=5&q=processed_text%3A(family)%20OR%20text_en%3A(family)%20OR%20text_pt%3A(fam%C3%ADlia)%20OR%20text_es%3A(familia)%20full_text%3A%20(family)%20full_text%3A%20(fam%C3%ADlia)%20full_text%3A%20(familia)&qf=full_text%5E0.000001%20text_en%5E2%20text_pt%5E1%20text_hi%5E1%20text_es%5E1&stopwords=true"
+
+		#data = urllib.request.urlopen(inurl)
+		#res = json.loads(data.read().decode())
+		
+		
+		f = open(f'{BASE_DIR}/select.json')
+		res = json.loads(f.read())
+		response = res['response']
+		highlighting = res['highlighting']
+		docs = response['docs']
+		total = response['numFound']
+
+		sentiments = {-1: 0, 0: 0, 1: 0}
+		pois = {}
+		locations = {}
+		sources = {'iphone': 0, 'android': 0, 'web': 0}
+		hashtags = {}
+
+		for doc in docs:
+			doc_id = doc['id']
+			hl = highlighting[doc_id]
+			hl_vals = []
+			for x in hl.values():
+				hl_vals.extend(x)
+			if len(hl_vals) > 0:
+				hl_text = hl_vals[0]
+			else:
+				hl_text = doc['full_text']
+			doc['hl_text'] = hl_text
+			sentiments[doc['sentiment']] += 1
+			if 'hashtags' in doc:
+				for hashtag in doc['hashtags']:
+					if hashtag not in hashtags:
+						hashtags[hashtag] = 0
+					hashtag[hashtag] += 1
+			if doc['poi_country'] not in locations: 
+				locations[doc['poi_country']] = 0
+			locations[doc['poi_country']] += 1
+			if doc['poi_name'] not in pois: 
+				pois[doc['poi_name']] = 0
+			pois[doc['poi_name']] += 1
+			if doc['source'].find('android') > 0:
+				sources['android'] += 1
+			elif doc['source'].find('iphone') > 0:
+				sources['iphone'] += 1
+			else:
+				sources['web'] += 1
+		
+		results = {
+				'tweets': docs,
+				'analysis': {
+					'sentiments': sentiments,
+					'pois': pois,
+					'locations': locations,
+					'sources': sources
+				},
+				'total': total
+		}
+
+		return JsonResponse(results, safe=False)
 		core_name = "DogDogGo"
 		localhost = "http://3.19.188.244:8983/solr/"
 		select_q = "/select?q="

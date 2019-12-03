@@ -4,18 +4,23 @@ import Search from './search'
 import SearchResults from './searchresults'
 import Analytics from './analytics'
 import Header from './header'
+import TweetComponent from './tweetcomponent'
+import POIComponent from './poicomponent'
 
 class App extends React.Component {
 	render() {
-		console.log(this.props.match)
 		return <div>
 			<Header />
-			<Switch>
-				<Route exact path='/' component={Search} />
-				<Route exact path='/search' component={SearchResults} />
-				<Route exact path='/search/p/:currentpage?' component={SearchResults} />
-				<Route exact path='/analysis' component={Analytics} />
-			</Switch>
+			<div style={{marginTop: "8rem"}}>
+				<Switch>
+					<Route exact path='/' component={Search} />
+					<Route exact path='/search' component={SearchResults} />
+					<Route exact path='/search/p/:currentpage?' component={SearchResults} />
+					<Route exact path='/analysis' component={Analytics} />
+					<Route exact path='/tweet/:tweetid?' component={TweetComponent} />
+					<Route exact path='/poi' component={POIComponent} />
+				</Switch>
+			</div>
 		</div>
 	}
 }

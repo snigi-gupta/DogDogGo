@@ -124,7 +124,7 @@
 	min-width: 20%;
 	border: 1px solid;
 	padding: 1rem;
-	margin-left: -8rem;
+	margin-left: -11rem;
 	border-color: rgb(230, 236, 240);
 }
 .center-dom {
@@ -151,4 +151,23 @@
 }
 .search-box {
 	padding-left: 3.5rem;
+}
+.tweet-hl {
+	background: bisque;
+}
+.search-time {
+	text-align: center;
+	font-size: 1.6rem;
+	margin-bottom: 1rem;
+	color: #70757a;
+	font-weight: 600;
+}
+.analysis-box {
+	position: fixed;
+	min-width: 20%;
+	border: 1px solid;
+	padding: 1rem;
+	border-color: rgb(230, 236, 240);
+	max-height: 80vh;
+	overflow-y: scroll;
 }

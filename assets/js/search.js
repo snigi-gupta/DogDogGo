@@ -1,6 +1,7 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDog, faSearch } from '@fortawesome/free-solid-svg-icons'
+import qs from 'qs'
 
 class Search extends React.Component {
 	constructor(props) {
@@ -18,8 +19,11 @@ class Search extends React.Component {
 		}
 		history.push({
 			pathname: '/search',
-			search: search
+			search: this.genQueryString({search: search})
 		})
+	}
+	genQueryString(params={}) {
+		return qs.stringify(params, {addQueryPrefix:true})
 	}
 	handleSearchChange(event) {
 		this.setState({search: event.target.value})

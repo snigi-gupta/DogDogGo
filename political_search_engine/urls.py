@@ -26,4 +26,6 @@ urlpatterns = [
 		url('analytics/', generic.TemplateView.as_view(template_name='index.html')),
 		url('search/', generic.TemplateView.as_view(template_name='index.html')),
 		url('about/', generic.TemplateView.as_view(template_name='index.html')),
+		url('tweet/', generic.TemplateView.as_view(template_name='index.html')),
+		url('poi/', generic.TemplateView.as_view(template_name='index.html')),
 ]
