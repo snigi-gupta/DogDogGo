@@ -6,7 +6,7 @@ import re
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import pdb
 
-mypath = "D:/UB CSE/IR/Project 4/Crawled_Tweets/Data6"
+mypath = "D:/UB CSE/IR/Project 4/Crawled_Tweets/Data7"
 
 
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
@@ -38,6 +38,8 @@ def sentiment_analysis(tweet):
 
 
 for file in onlyfiles:
+    if "replies" in file:
+        continue
     # print(file)
     file_path = mypath + "/" + file
     with open(file_path) as f:
@@ -176,9 +178,16 @@ for file in onlyfiles:
         for filler in fillers:
             t['processed_text'] = re.sub(filler, '', processed_text)
 
-        # remove all \n
-        # t['processed_text'] = re.sub("\\n", ' ', t['processed_text'])
-        
+        t['processed_text'] = t['processed_text'].replace("\n", " ").strip()
+
+        source = d.get('source').lower()
+        if 'android' in source:
+            t['source'] = 'android'
+        elif 'ios' in source or 'iphone' in source or 'mac' in source:
+            t['source'] = 'iphone'
+        else:
+            t['source'] = 'web'
+
         # for x in delete_keys:
         #     if x in d:
         #         del d[x]
