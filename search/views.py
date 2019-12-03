@@ -25,6 +25,7 @@ from rest_framework.views import APIView
 from .models import Query
 from .serializers import QuerySerializer
 from django.http import HttpResponse, JsonResponse
+from urllib.parse import quote
 import pdb
 import json
 import urllib.request
@@ -35,6 +36,9 @@ from django.http import HttpResponse, JsonResponse
 import os
 import json
 import random
+import os, requests, uuid
+from collections import defaultdict
+
 # Create your views here.
 # def index(request):
     # return HttpResponse("Hello, world. You're at the search index.")
@@ -42,119 +46,270 @@ import random
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class SearchQueryView(APIView):
-	def sentiment_analysis(self, docs):
-		analyser = SentimentIntensityAnalyzer()
-		for tweet in docs:
-			text = tweet['full_text']
-			sentiment = analyser.polarity_scores(text)
-			if sentiment['compound'] < -0.1:
-				tweet['sentiment'] = -1
-			elif sentiment['compound'] > 0.2:
-				tweet['sentiment'] = 1
-			else:
-				tweet['sentiment'] = 0
-		return docs
-	
-	def get(self, request):
-		inurl = "http://18.191.146.199:8983/solr/DogDogGo/select?&defType=edismax&fl=*&hl.fl=full_text&hl.simple.post=%3C%2Fspan%3E&hl.simple.pre=%3Cspan%20class%3D%27tweet-hl%27%3E&hl=on&pf=processed_text%5E2&ps=5&q=processed_text%3A(family)%20OR%20text_en%3A(family)%20OR%20text_pt%3A(fam%C3%ADlia)%20OR%20text_es%3A(familia)%20full_text%3A%20(family)%20full_text%3A%20(fam%C3%ADlia)%20full_text%3A%20(familia)&qf=full_text%5E0.000001%20text_en%5E2%20text_pt%5E1%20text_hi%5E1%20text_es%5E1&stopwords=true"
 
-		#data = urllib.request.urlopen(inurl)
-		#res = json.loads(data.read().decode())
-		
-		
-		f = open(f'{BASE_DIR}/select.json')
-		res = json.loads(f.read())
-		response = res['response']
-		highlighting = res['highlighting']
-		docs = response['docs']
-		total = response['numFound']
+    def translate_query(self, text):
+        '''
+        !!! Please add TRANSLATOR_TEXT_SUBSCRIPTION_KEY and TRANSLATOR_TEXT_ENDPOINT in your
+            environment (bash_profile) before starting !!!
 
-		sentiments = {-1: 0, 0: 0, 1: 0}
-		pois = {}
-		locations = {}
-		sources = {'iphone': 0, 'android': 0, 'web': 0}
-		hashtags = {}
+        Description: Translates the given text into 4 languages and detects the source language of the text
+                     1) English
+                     2) Hindi
+                     3) Spanish
+                     4) Portugese
+        Input:
+            text : Input string to translate. Can be in any language
 
-		for doc in docs:
-			doc_id = doc['id']
-			hl = highlighting[doc_id]
-			hl_vals = []
-			for x in hl.values():
-				hl_vals.extend(x)
-			if len(hl_vals) > 0:
-				hl_text = hl_vals[0]
-			else:
-				hl_text = doc['full_text']
-			doc['hl_text'] = hl_text
-			sentiments[doc['sentiment']] += 1
-			if 'hashtags' in doc:
-				for hashtag in doc['hashtags']:
-					if hashtag not in hashtags:
-						hashtags[hashtag] = 0
-					hashtag[hashtag] += 1
-			if doc['poi_country'] not in locations: 
-				locations[doc['poi_country']] = 0
-			locations[doc['poi_country']] += 1
-			if doc['poi_name'] not in pois: 
-				pois[doc['poi_name']] = 0
-			pois[doc['poi_name']] += 1
-			if doc['source'].find('android') > 0:
-				sources['android'] += 1
-			elif doc['source'].find('iphone') > 0:
-				sources['iphone'] += 1
-			else:
-				sources['web'] += 1
-		
-		results = {
-				'tweets': docs,
-				'analysis': {
-					'sentiments': sentiments,
-					'pois': pois,
-					'locations': locations,
-					'sources': sources
-				},
-				'total': total
-		}
+        Output:
+            translated_data = {
+                                "lang" : "* language of source text *"
+                                "en" : "text in english"
+                                "hi" : "text in hindi"
+                                "pt" : "text in portugese"
+                                "es" : "text in spanish"
+                              }
+        '''
 
-		return JsonResponse(results, safe=False)
-		core_name = "DogDogGo"
-		localhost = "http://3.19.188.244:8983/solr/"
-		select_q = "/select?q="
-		fl_score = "&fl=id%2Cscore&wt=json&indent=true&rows=20"
-		inurl = ""
-		# query = request.GET.get('q', None)
-		query = "Liberdade"
-		# removing newline character and escaping all ':'
-		query = query.replace("\n", "")
-		query = query.replace(":", "\:")
+        key_var_name = 'TRANSLATOR_TEXT_SUBSCRIPTION_KEY'
+        subscription_key = "463d120dd710483691cedf8d5b4601af"
 
-		# ensuring all words are searched in the given language
-		q_en = "(" + query + ")"
-		q_en = quote(query)
+        endpoint_var_name = 'TRANSLATOR_TEXT_ENDPOINT'
+        endpoint = "https://api.cognitive.microsofttranslator.com/"
 
-		or_seperator = "%20OR%20"
-		if query:
-			# inurl = 'http://localhost:8983/solr/corename/select?q=*%3A*&fl=id%2Cscore&wt=json&indent=true&rows=1000'
-			inurl = localhost + core_name + select_q + "full_text:" + q_en + fl_score
-			# inurl = localhost + core_name + select_q + "text_txt_en" + q_en + or_seperator + "text_en" + query + fl_score
-			# return HttpResponse(inurl)
+        path = '/translate?api-version=3.0'
+        params = '&to=en&to=hi&to=es&to=pt'
+        constructed_url = endpoint + path + params
 
-			data = urllib.request.urlopen(inurl)
-			docs = json.load(data)['response']['docs']
-			return Response(docs)
-		else:
-			message = "Please enter a query for us to search!"
-			return Response(message)
+        headers = {
+            'Ocp-Apim-Subscription-Key': subscription_key,
+            'Content-type': 'application/json',
+            'X-ClientTraceId': str(uuid.uuid4())
+        }
 
-		def index(request):
-			f = open(f'{BASE_DIR}/tweets/BarackObama.json')
-			data = json.loads(f.read())
-			data = data[:25]
-			for i in range(0, len(data)):
-							data[i]['sentiment'] = random.choice(SENTIMENTS)
-							data[i]['topic'] = 'dummy'
-							data[i]['impact'] = {'articles': random.randint(0, 50), 'replies': random.randint(0, 50)}
-			return JsonResponse(data, safe=False)
+        body = [{
+            'text': text
+        }]
+
+        request = requests.post(constructed_url, headers=headers, json=body)
+        response = request.json()
+        translated_text = {}
+        translated_text['lang'] = response[0]['detectedLanguage']['language']
+        for i in range(4):
+            translated_text[response[0]['translations'][i]['to']] = response[0]['translations'][i]['text']
+        return translated_text
+
+    def process_query(self, query):
+        """
+        This method processed query and returns the processed query
+        :param query:
+        :return: query
+        """
+        # removing new line and escaping all ':'
+        query = query.replace("\n", " ")
+        query = query.replace(":", "\:")
+
+        # ensuring all words are searched in the given language
+        query = "(" + query + ")"
+        query = quote(query)
+
+        return query
+
+    def process_filter(self, filter):
+        filter_string = ""
+        for f in filter:
+            filter_string += f + " "
+        filter_string = filter_string.strip()
+
+        # removing new line and escaping all ':'
+        filter_string = filter_string.replace("\n", " ")
+        filter_string = filter_string.replace(":", "\:")
+
+        # ensuring all words are searched in the given language
+        filter_string = "(" + filter_string + ")"
+        filter_string = quote(filter_string)
+
+        return filter_string
+
+    def plot_data(self, response):
+
+    	docs = response['docs']
+    	total = response['numFound']
+    	sentiment_count = defaultdict(int)
+    	poi_count = defaultdict(int)
+    	location_count = defaultdict(int)
+    	source_count = defaultdict(int)
+    	hashtag_count = defaultdict(int)
+    	tweets = []
+    	for doc in docs:
+    		tweet_hash = {}
+    		doc_id = doc['id']
+    		hl = highlighting.get(doc_id, {})
+    		hl_vals = []
+    		for x in hl.values():
+    		    hl_vals.extend(x)
+    		    if len(hl_vals) > 0:
+    		    	hl_text = hl_vals[0]
+    		    else:
+    		    	hl_text = doc['full_text'][0]
+	    	tweet_hash['id'] = doc['id']
+	    	tweet_hash['hl_text'] = hl_text
+    		tweet_hash['sentiment'] = doc['sentiment'][0]
+    		tweet_hash['user_name'] = doc['user_name'][0]
+    		tweet_hash['verified'] = doc['verified'][0]
+    		tweet_hash['poi_name'] = doc['poi_name'][0]
+    		tweet_hash['created_at'] = doc['created_at'][0]
+    		tweet_hash['retweet_count'] = doc['retweet_count'][0]
+    		tweet_hash['reply_count'] = doc['reply_count'][0]
+    		tweet_hash['article_count'] = random.randint(0, 10)
+
+    		sentiment_count[doc['sentiment'][0]] += 1
+    		if 'hashtags' in doc:
+    			for hashtag in doc['hashtags']:
+    				hashtag_count[hashtag] += 1 
+
+    		location_count[doc['poi_country'][0]] += 1
+    		poi_count[doc['poi_name'][0]] += 1
+
+    		source_count[doc['source'][0]] +=1 
+
+    		tweets.append(tweet_hash)
+    		
+    	results = {
+    		'tweets': tweets,
+    		'analysis': {
+    		'sentiments': sentiment_count,
+    		'pois': poi_count,
+    		'locations': location_count,
+    		'sources': source_count,
+    		'hashtags': hashtag_count
+    		},
+    		'total': total
+    		}
+
+    	return results
+
+    def get(self, request):
+
+        # pdb.set_trace()
+        response = {}
+        # contants
+        core_name = "DDG"
+        select_q = "/select?q="
+        localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
+        custom_search = "&defType=edismax&pf=processed_text%5E2&ps=5&hl.fragsize=300&hl.fl=full_text,text_*&" \
+                        "hl=on&hl.simple.pre=%3Cspan%20class%3D%22tweet-hl%22%3E&hl.simple.post=%3C%2Fspan%3E&" \
+                        "pf=processed_text%5E2&ps=5"
+        fl_score = "&fl=*&wt=json&indent=true"
+        query_field = "&qf=full_text%5E0.00001%20"
+        stopwords = "&stopwords=true"
+
+        # fl_score = "&fl=id%2Cscore%2Cfull_text&wt=json&indent=true&rows=20"
+        inurl = ""
+
+        # testing
+        # request = {'search': 'family is', 'filters': {'location': ['New York', 'India'], 'poi': ['Trump','Abraham Weintraub'],
+        #                                               'hashtags': ['trump','MuitoOrgulho']}}
+        query = request.GET.get('search', None)
+        filters = request.GET.get('qfilters', None)
+        more_like_this = request.GET.get('mlt_flag', False)
+
+        # analytics = request.GET.get('analytics', False)
+
+        start = request.GET.get('start', 0)
+        end = request.GET.get('end', 200000000)
+        limit = "&rows=" + end + "&start=" + start
+
+        # filters
+        hashtags = []
+        location = []
+        poi = []
+        sentiment = []
+        if filters:
+        	hashtags = filters.get('hashtags', None)
+        	location = filters.get('location', None)
+        	poi = filters.get('poi', None)
+        	sentiment = filters.get('sentiment', None)
+
+        query_hashtag = self.process_filter(hashtags) if hashtags else None
+        query_location = self.process_filter(location) if location else None
+        query_poi = self.process_filter(poi) if poi else None
+        query_sentiment = self.process_filter(sentiment) if sentiment else None
+
+        # testing
+        # more_like_this = True
+        # query = str(1169733819328532480)
+        # query = "Liberdade"
+
+        # get query translated
+        translated_query = self.translate_query(query)
+        query_en = translated_query['en']
+        query_hi = translated_query['hi']
+        query_pt = translated_query['pt']
+        query_es = translated_query['es']
+
+        lang_detected = translated_query['lang']
+        if lang_detected == "en":
+            query_field = query_field + "text_en%5E2%20text_es%5E1%20text_hi%5E1%20text_pt%5E1"
+        elif lang_detected == "hi":
+            query_field = query_field + "text_en%5E1%20text_es%5E1%20text_hi%5E2%20text_pt%5E1"
+        elif lang_detected == "pt":
+            query_field = query_field + "text_en%5E1%20text_es%5E1%20text_hi%5E1%10text_pt%5E2"
+        elif lang_detected == "es":
+            query_field = query_field + "text_en%5E1%20text_es%5E2%20text_hi%5E1%10text_pt%5E1"
+
+        if more_like_this:
+        	inurl = localhost + "%7B!mlt%20q%3Did%7D" + query + limit + fl_score
+
+        # processing query
+        else:
+            query = self.process_query(query)
+            query_en = self.process_query(query_en)
+            query_hi = self.process_query(query_hi)
+            query_pt = self.process_query(query_pt)
+            query_es = self.process_query(query_es)
+
+	        # seperator variable
+	        or_seperator = "%20OR%20"
+	        and_seperator = "%20AND%20"
+
+	        temp_array = []
+	        temp_flag = False
+        
+
+            if hashtags:
+                temp_array.append("hashtags:" + query_hashtag)
+                temp_flag = True
+            if location:
+                temp_array.append("poi_country:" + query_location)
+                temp_flag = True
+            if poi:
+                temp_array.append("poi_name:" + query_poi)
+                temp_flag = True
+            if sentiment:
+                temp_array.append("sentiment:" + query_sentiment)
+                temp_flag = True
+
+            if temp_flag:
+                inurl = localhost + "processed_text:" + query + and_seperator + "AND".join(temp_array)
+
+            elif not inurl:
+                inurl = localhost + "processed_text:" + query + or_seperator + "text_en:" + query_en \
+                        + or_seperator + "text_pt:" + query_pt + or_seperator + "text_es:" + query_es + custom_search +\
+                        query_field + limit + stopwords + fl_score
+            
+            #pdb.set_trace()
+        print(inurl)
+        data = urllib.request.urlopen(inurl)
+        res = json.load(data)
+        response = res['response']
+        highlighting = res.get('highlighting', None)
+        
+        results = self.plot_data(response)
+        
+        return JsonResponse(results, safe=False)
+    else:
+        message = "Please enter a query for us to search!"
+        return Response(message)
 
 # Create your views here.
 class ListQueryView(APIView):

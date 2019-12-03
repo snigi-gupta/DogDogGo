@@ -26,9 +26,9 @@ import Plot from 'react-plotly.js'
 import qs from 'qs'
 
 const sentimentEmoticonHash = {
-	'1': {icon: faSmileBeam, classname: 'sentiment-happy', label: 'Positive'},
-	'-1': {icon: faAngry, classname: 'sentiment-angry', label: 'Negative'},
-	'0': {icon: faMeh, classname: 'sentiment-neutral', label: 'Neutral'}
+	'positive': {icon: faSmileBeam, classname: 'sentiment-happy', label: 'Positive'},
+	'negative': {icon: faAngry, classname: 'sentiment-angry', label: 'Negative'},
+	'neutral': {icon: faMeh, classname: 'sentiment-neutral', label: 'Neutral'}
 }
 
 const LIMIT = 20
@@ -101,13 +101,14 @@ class SearchResults extends React.Component {
 	fetchTweets(fetchAnalytics = true) {
 		const { actions } = this.props
 		const { filters, analysis } = this.state
+		this.setState({loading: true})
 		let query = this.parseQuery()
 		let search = query.search || ""
 		let currentPage = this.getCurrentPage()
 		let start = currentPage * LIMIT
 		let end = start + LIMIT
 		let stime = performance.now()
-		actions.fetchTweets({search: search, start: start, end: end, analyticsTrue: fetchAnalytics})
+		actions.fetchTweets({search: search, start: start, end: end, analyticsTrue: fetchAnalytics, mlt_flag: query.mlt_flag})
 			.then((res) => {
 				console.log(res)
 				let data = res.data
@@ -125,7 +126,7 @@ class SearchResults extends React.Component {
 					total: data.total,
 					loading: false,
 					timetaken: timetaken,
-					qfilters: query.qfilters || DEFAULTQFILTERS,
+					qfilters: Object.assign(DEFAULTQFILTERS, query.qfilters || {}),
 					search: search
 				})
 			})
@@ -210,7 +211,7 @@ class SearchResults extends React.Component {
 		const { history } = this.props
 		history.push({
 			pathname: '/search',
-			search: this.genQueryString({search: tweet_id, mlt: true})
+			search: this.genQueryString({search: tweet_id, mlt_flag: true})
 		})
 	}
 	handlePageClick(data) {
@@ -254,7 +255,8 @@ class SearchResults extends React.Component {
 		let newState = {}
 		current = current || []
 		newState[key] = current.map(x => (x.value))
-		let newfilters = Object.assign(qfilters, newState)
+		let newfilters = Object.assign(DEFAULTQFILTERS, qfilters, newState)
+		console.log(newfilters)
 		this.setState({qfilters: newfilters})
 	}
 	clearFilters(event) {
@@ -269,7 +271,7 @@ class SearchResults extends React.Component {
 	}
 	filters() {
 		const { filters, qfilters } = this.state
-		console.log(filters)
+		console.log(qfilters)
 		return <div className="filter-box">
 			<h2 style={{textAlign: 'center'}}>
 				FILTERS
