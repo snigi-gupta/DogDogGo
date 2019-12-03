@@ -3,9 +3,10 @@ from os import listdir
 from os.path import isfile, join
 import emoji
 import re
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import pdb
 
-mypath = "D:/UB CSE/IR/Project 4/Crawled_Tweets/Data4"
+mypath = "D:/UB CSE/IR/Project 4/Crawled_Tweets/Data6"
 
 
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
@@ -20,9 +21,25 @@ onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 #                'place', 'contributors', 'is_quote_status', 'favorited', 'retweeted']
 
 
+def sentiment_analysis(tweet):
+    analyser = SentimentIntensityAnalyzer()
+    text = tweet['full_text']
+    sentiment = analyser.polarity_scores(text)
+    if sentiment['compound'] < -0.1:
+        # tweet['sentiment'] = -1
+        return "negative"
+    elif sentiment['compound'] > 0.2:
+        # tweet['sentiment'] = 1
+        return "positive"
+    else:
+        # tweet['sentiment'] = 0
+        return "neutral"
+    # return tweet
+
+
 for file in onlyfiles:
     # print(file)
-    file_path = mypath+"/" + file
+    file_path = mypath + "/" + file
     with open(file_path) as f:
         data = json.load(f)
     new_data = []
@@ -87,14 +104,14 @@ for file in onlyfiles:
 
         # entities
         # hashtags
-        t['hashtags'] = [i.get('text') for i in d.get('entities').get('hashtags') ]
-        t['hashtags_indices'] = [i.get('indices') for i in d.get('entities').get('hashtags') ]
+        t['hashtags'] = [i.get('text') for i in d.get('entities').get('hashtags')]
+        t['hashtags_indices'] = [i.get('indices') for i in d.get('entities').get('hashtags')]
 
         # user_mentions
-        t['user_mentions_screen_name'] = [i.get('screen_name') for i in d.get('entities').get('user_mentions') ]
-        t['user_mentions_id'] = [i.get('id') for i in d.get('entities').get('user_mentions') ]
-        t['user_mentions_name'] = [i.get('name') for i in d.get('entities').get('user_mentions') ]
-        t['user_mentions_indices'] = [i.get('indices') for i in d.get('entities').get('user_mentions') ]
+        t['user_mentions_screen_name'] = [i.get('screen_name') for i in d.get('entities').get('user_mentions')]
+        t['user_mentions_id'] = [i.get('id') for i in d.get('entities').get('user_mentions')]
+        t['user_mentions_name'] = [i.get('name') for i in d.get('entities').get('user_mentions')]
+        t['user_mentions_indices'] = [i.get('indices') for i in d.get('entities').get('user_mentions')]
 
         # urls
         t['urls'] = [i.get('url') for i in d.get('entities').get('urls')]
@@ -109,7 +126,7 @@ for file in onlyfiles:
 
         try:
             for i in d.get('extended_entities').get('media'):
-                t['media_thumbnail_ urls'].append(i.get('media_url'))
+                t['media_thumbnail_urls'].append(i.get('media_url'))
                 t['media_shortened_url'].append(i.get('url'))
                 t['media_type'].append(i.get('type'))
 
@@ -126,16 +143,17 @@ for file in onlyfiles:
         t['user_location'] = d.get('user').get('location')
         t['user_description'] = d.get('user').get('description')
         t['user_url'] = d.get('user').get('url')
-        t['user_followers_count'] = d.get('user').get('entities').get('followers_count')
-        t['user_friends_count'] = d.get('user').get('entities').get('friends_count')
-        t['user_listed_count'] = d.get('user').get('entities').get('listed_count')
-        t['user_created_at'] = d.get('user').get('entities').get('created_at')
+
+        t['user_followers_count'] = d.get('user').get('followers_count')
+        t['user_friends_count'] = d.get('user').get('friends_count')
+        t['user_listed_count'] = d.get('user').get('listed_count')
+        t['user_created_at'] = d.get('user').get('created_at')
         # number of likes user has (static)
-        t['user_favourites_count'] = d.get('user').get('entities').get('favourites_count')
-        t['user_time_zone'] = d.get('user').get('entities').get('time_zone')
-        t['user_statuses_count'] = d.get('user').get('entities').get('statuses_count')
-        t['user_profile_image_url'] = d.get('user').get('entities').get('profile_image_url')
-        t['user_profile_image_url_https'] = d.get('user').get('entities').get('profile_image_url_https')
+        t['user_favourites_count'] = d.get('user').get('favourites_count')
+        t['user_time_zone'] = d.get('user').get('time_zone')
+        t['user_statuses_count'] = d.get('user').get('statuses_count')
+        t['user_profile_image_url'] = d.get('user').get('profile_image_url')
+        t['user_profile_image_url_https'] = d.get('user').get('profile_image_url_https')
 
         # place
         if d.get('place'):
@@ -145,16 +163,22 @@ for file in onlyfiles:
         # emoticons
         t['emoticons'] = [i for i in d.get('full_text') if i in emoji.UNICODE_EMOJI]
 
+        # sentiment
+        t['sentiment'] = sentiment_analysis(d)
+
         # scraping
         fillers.extend(t.get('emoticons'))
         # urls mentioned in text
-        fillers.extend( t.get('urls'))
-        # urls as images or videos
+        fillers.extend(t.get('urls'))
+        # urls mentioned in text as images or videos
         fillers.extend(t.get('media_shortened_url'))
 
         for filler in fillers:
             t['processed_text'] = re.sub(filler, '', processed_text)
 
+        # remove all \n
+        # t['processed_text'] = re.sub("\\n", ' ', t['processed_text'])
+        
         # for x in delete_keys:
         #     if x in d:
         #         del d[x]
