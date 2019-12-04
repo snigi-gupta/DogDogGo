@@ -203,6 +203,8 @@ class SearchQueryView(APIView):
         fl_score = "&fl=*&wt=json&indent=true"
         query_field = "&qf=full_text%5E0.00001%20"
         stopwords = "&stopwords=true"
+        facet_search = "&facet.field=hashtags&facet.field=lang&facet.field=poi_name&facet.field=poi_country&" \
+                       "facet.field=sentiment&facet.sort=count&facet.limit=10facet=on"
 
         # fl_score = "&fl=id%2Cscore%2Cfull_text&wt=json&indent=true&rows=20"
         inurl = ""
@@ -217,10 +219,9 @@ class SearchQueryView(APIView):
         # analytics = request.GET.get('analytics', False)
 
         start = request.GET.get('start', 0)
-        end = request.GET.get('end', 0)
-        _end = 2000000
+        end = request.GET.get('end', 2000000)
 
-        limit = "&rows=" + _end + "&start=" + start
+        limit = "&rows=" + end + "&start=" + start
 
         # filters
         hashtags = []
@@ -264,7 +265,7 @@ class SearchQueryView(APIView):
 
         # processing query
         if more_like_this:
-            inurl = localhost + "%7B!mlt%20q%3Did%7D" + query + highlight_search + limit + fl_score
+            inurl = localhost + "%7B!mlt%20q%3Did%7D" + query + highlight_search + facet_search + limit + fl_score
         else:
             query = self.process_query(query)
             query_en = self.process_query(query_en)
@@ -294,12 +295,12 @@ class SearchQueryView(APIView):
 
             if temp_flag:
                 inurl = localhost + "processed_text:" + query + and_seperator + "AND".join(temp_array) + \
-                        highlight_search + limit + fl_score
+                        highlight_search + facet_search + limit + fl_score
 
             elif not inurl:
                 inurl = localhost + "processed_text:" + query + or_seperator + "text_en:" + query_en + or_seperator + \
                         "text_hi:" + query_hi + or_seperator + "text_pt:" + query_pt + or_seperator + "text_es:" + \
-                        query_es + custom_search + query_field + limit + stopwords + fl_score
+                        query_es + custom_search + query_field + facet_search + limit + stopwords + fl_score
         # pdb.set_trace()
         print(inurl)
         data = urllib.request.urlopen(inurl)
@@ -307,7 +308,7 @@ class SearchQueryView(APIView):
         response = res['response']
         highlighting = res['highlighting']
         results = self.plot_data(response, highlighting)
-        return Response(results[start:end)
+        return Response(results)
 
 # Create your views here.
 class ListQueryView(APIView):
