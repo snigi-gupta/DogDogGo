@@ -160,7 +160,7 @@ class SearchResults extends React.Component {
 							{ tweet.verified && 
 								<FontAwesomeIcon icon={faCheckCircle} className="verified-circle"/>
 							}{'  '}
-							<span className="text-grey">@{tweet.poi_name}</span>
+							<span className="text-grey">@{tweet.user_name}</span>
 							<span className="text-grey">
 								{' | '}
 								{moment(tweet.created_at).fromNow()}
