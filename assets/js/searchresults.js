@@ -33,7 +33,14 @@ const sentimentEmoticonHash = {
 }
 
 const LIMIT = 20
-const DEFAULTQFILTERS = {poi: [], location: [], hashtags: [], sentiment: [], language: []}
+const DEFAULTQFILTERS = {
+	poi: [],
+	location: [],
+	hashtags: [],
+	sentiment: [],
+	language: [],
+	source: []
+}
 
 class SearchResults extends React.Component {
 	constructor(props) {
@@ -102,7 +109,6 @@ class SearchResults extends React.Component {
 		const { actions } = this.props
 		const { filters, analysis, qfilters } = this.state
 		this.setState({loading: true})
-		console.log(this.props.location)
 		let query = this.parseQuery()
 		let search = query.search || ""
 		let currentPage = this.getCurrentPage()
@@ -230,7 +236,7 @@ class SearchResults extends React.Component {
 		event.preventDefault()
 		const { history } = this.props
 		const { qfilters } = this.state
-		const { poi, location, hashtags, sentiment, language } = qfilters
+		const { poi, location, hashtags, sentiment, language, source } = qfilters
 		let current_q = this.parseQuery()
 		let q = {qfilters: {}}
 		if (poi.length > 0) {
@@ -246,7 +252,10 @@ class SearchResults extends React.Component {
 			q['qfilters']['sentiment'] = sentiment
 		}
 		if (language.length > 0) {
-			q['qfilters']['lang'] = sentiment
+			q['qfilters']['language'] = language
+		}
+		if (source.length > 0) {
+			q['qfilters']['source'] = source
 		}
 		q['search'] = current_q['search']
 		history.push({
@@ -345,6 +354,19 @@ class SearchResults extends React.Component {
 							value={qfilters.language.map(x => ({label: x, value: x}))}
 						/>
 					</div>
+					<div className="form form-group">
+						<label htmlFor='source'>Source</label>
+						<Select
+							isMulti={true}
+							className="basic-single"
+							classNamePrefix="select"
+							isClearable={true}
+							name="source"
+							options={filters.source}
+							onChange={this.handleFilterChange}
+							value={qfilters.source.map(x => ({label: x, value: x}))}
+						/>
+					</div>
 					<div className="row" style={{textAlign: 'center'}}>
 						<button className="btn btn-info" style={{width: '10rem'}}>
 							Apply
@@ -432,6 +454,18 @@ class SearchResults extends React.Component {
 			},
 			]}
 			layout={{width: 480, height: 360, title: 'Person Of Interests Distribution'}}
+			onClick={this.test}
+		/>)
+		plots.push(<Plot
+			key='source'
+			data={[
+			{
+				y: Object.values(analysis.source),
+				x: Object.keys(analysis.source),
+				type: 'bar',
+			},
+			]}
+			layout={{width: 480, height: 360, title: 'Distribution of Devices Used'}}
 			onClick={this.test}
 		/>)
 		return plots

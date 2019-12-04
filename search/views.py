@@ -181,7 +181,7 @@ class SearchQueryView(APIView):
                 'sentiment': sentiment_count,
                 'poi': poi_count,
                 'location': location_count,
-                'sources': source_count,
+                'source': source_count,
                 'hashtags': hashtag_count
             },
             'total': total
