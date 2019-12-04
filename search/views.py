@@ -160,7 +160,7 @@ class SearchQueryView(APIView):
             tweet_hash['poi_name'] = doc['poi_name'][0]
             tweet_hash['created_at'] = doc['created_at'][0]
             tweet_hash['retweet_count'] = doc['retweet_count'][0]
-            tweet_hash['reply_count'] = doc['reply_count'][0]
+            # tweet_hash['reply_count'] = doc['reply_count'][0]
             tweet_hash['article_count'] = random.randint(0, 10)
 
             sentiment_count[doc['sentiment'][0]] += 1
@@ -248,6 +248,8 @@ class SearchQueryView(APIView):
         query_pt = translated_query['pt']
         query_es = translated_query['es']
 
+        # import pdb
+        # pdb.set_trace()
         lang_detected = translated_query['lang']
         if lang_detected == "en":
             query_field = query_field + "text_en%5E2%20text_es%5E1%20text_hi%5E1%20text_pt%5E1"
