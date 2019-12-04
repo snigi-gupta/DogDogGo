@@ -204,7 +204,7 @@ class SearchQueryView(APIView):
         query_field = "&qf=full_text%5E0.00001%20"
         stopwords = "&stopwords=true"
         facet_search = "&facet.field=hashtags&facet.field=lang&facet.field=poi_name&facet.field=poi_country&" \
-                       "facet.field=sentiment&facet.sort=count&facet.limit=10facet=on"
+                       "facet.field=sentiment&facet.sort=count&facet.limit=10&facet=on"
 
         # fl_score = "&fl=id%2Cscore%2Cfull_text&wt=json&indent=true&rows=20"
         inurl = ""
