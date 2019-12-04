@@ -9,9 +9,9 @@ class Header extends React.Component {
 					<Link className="navbar-brand" to='/'>DogDogGo</Link>
 				</div>
 				<ul className="nav navbar-nav navbar-right">
-					<li><a href='/usageanalytics' target="_blank" activeClassName='active'>Usage Analytics</a></li>
-					<li><a href='/timeanalytics' target="_blank" activeClassName='active'>Time Series Analytics</a></li>
-					<li><a href='/locanalytics' target="_blank" activeClassName='active'>Location Analytics</a></li>
+					<li><a href='/usageanalytics' target="_blank" activeclassname='active'>Usage Analytics</a></li>
+					<li><a href='/timeanalytics' target="_blank" activeclassname='active'>Time Series Analytics</a></li>
+					<li><a href='/locanalytics' target="_blank" activeclassname='active'>Location Analytics</a></li>
 					<li><NavLink to='/about' activeClassName='active'>About</NavLink></li>
 				</ul>
 			</div>

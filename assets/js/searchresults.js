@@ -22,6 +22,7 @@ import moment from 'moment'
 import ExternalImage from 'react-external-image'
 import ReactPaginate from 'react-paginate'
 import Select from 'react-select'
+import CreatableSelect from 'react-select/creatable';
 import Plot from 'react-plotly.js'
 import qs from 'qs'
 
@@ -32,7 +33,7 @@ const sentimentEmoticonHash = {
 }
 
 const LIMIT = 20
-const DEFAULTQFILTERS = {pois: [], locations: [], hashtags: [], sentiments: []}
+const DEFAULTQFILTERS = {poi: [], location: [], hashtags: [], sentiment: [], language: []}
 
 class SearchResults extends React.Component {
 	constructor(props) {
@@ -48,7 +49,7 @@ class SearchResults extends React.Component {
 		}
 		let currentq = this.parseQuery()
 		_state['search'] = currentq['search'] || ''
-		_state['qfilters'] = Object.assign(_state['qfilters'], currentq['qfilters'])
+		_state['qfilters'] = Object.assign({}, _state['qfilters'], currentq['qfilters'])
 		this.state = _state
 		this.handlePageClick = this.handlePageClick.bind(this)
 		this.handleSearchChange = this.handleSearchChange.bind(this)
@@ -75,8 +76,7 @@ class SearchResults extends React.Component {
 		}
 	}
 	parseQuery() {
-		const { history } = this.props
-		const { location } = history
+		const { location } = this.props
 		return qs.parse(location.search, {ignoreQueryPrefix: true})
 	}
 	getCurrentPage() {
@@ -93,22 +93,24 @@ class SearchResults extends React.Component {
 				filters[key].push({label: k, value: k})
 			})
 		})
-		filters['sentiments'].forEach(x => {
+		filters['sentiment'].forEach(x => {
 			x['label'] = sentimentEmoticonHash[x['label']]['label']
 		})
 		return filters
 	}
 	fetchTweets(fetchAnalytics = true) {
 		const { actions } = this.props
-		const { filters, analysis } = this.state
+		const { filters, analysis, qfilters } = this.state
 		this.setState({loading: true})
+		console.log(this.props.location)
 		let query = this.parseQuery()
 		let search = query.search || ""
 		let currentPage = this.getCurrentPage()
 		let start = currentPage * LIMIT
 		let end = start + LIMIT
 		let stime = performance.now()
-		actions.fetchTweets({search: search, start: start, end: end, analyticsTrue: fetchAnalytics, mlt_flag: query.mlt_flag})
+		console.log(DEFAULTQFILTERS)
+		actions.fetchTweets({qfilters: qfilters, search: search, start: start, end: end, analyticsTrue: fetchAnalytics, mlt_flag: query.mlt_flag})
 			.then((res) => {
 				console.log(res)
 				let data = res.data
@@ -126,7 +128,7 @@ class SearchResults extends React.Component {
 					total: data.total,
 					loading: false,
 					timetaken: timetaken,
-					qfilters: Object.assign(DEFAULTQFILTERS, query.qfilters || {}),
+					qfilters: Object.assign({}, DEFAULTQFILTERS, query.qfilters || {}),
 					search: search
 				})
 			})
@@ -228,20 +230,23 @@ class SearchResults extends React.Component {
 		event.preventDefault()
 		const { history } = this.props
 		const { qfilters } = this.state
-		const { pois, locations, hashtags, sentiments } = qfilters
+		const { poi, location, hashtags, sentiment, language } = qfilters
 		let current_q = this.parseQuery()
 		let q = {qfilters: {}}
-		if (pois.length > 0) {
-			q['qfilters']['pois'] = pois
+		if (poi.length > 0) {
+			q['qfilters']['poi'] = poi
 		}
-		if (locations.length > 0) {
-			q['qfilters']['locations'] = locations
+		if (location.length > 0) {
+			q['qfilters']['location'] = location
 		}
 		if (hashtags.length > 0) {
 			q['qfilters']['hashtags'] = hashtags
 		}
-		if (sentiments.length > 0) {
-			q['qfilters']['sentiments'] = sentiments
+		if (sentiment.length > 0) {
+			q['qfilters']['sentiment'] = sentiment
+		}
+		if (language.length > 0) {
+			q['qfilters']['lang'] = sentiment
 		}
 		q['search'] = current_q['search']
 		history.push({
@@ -255,15 +260,13 @@ class SearchResults extends React.Component {
 		let newState = {}
 		current = current || []
 		newState[key] = current.map(x => (x.value))
-		let newfilters = Object.assign(DEFAULTQFILTERS, qfilters, newState)
-		console.log(newfilters)
+		let newfilters = Object.assign({}, DEFAULTQFILTERS, qfilters, newState)
 		this.setState({qfilters: newfilters})
 	}
 	clearFilters(event) {
 		event.preventDefault()
 		const { history } = this.props
 		let current_q = this.parseQuery()
-		//this.setState()
 		history.push({
 			pathname: '/search',
 			search: this.genQueryString({search: current_q['search']})
@@ -271,7 +274,6 @@ class SearchResults extends React.Component {
 	}
 	filters() {
 		const { filters, qfilters } = this.state
-		console.log(qfilters)
 		return <div className="filter-box">
 			<h2 style={{textAlign: 'center'}}>
 				FILTERS
@@ -285,10 +287,10 @@ class SearchResults extends React.Component {
 							className="basic-single"
 							classNamePrefix="select"
 							isClearable={true}
-							name="pois"
-							options={filters.pois}
+							name="poi"
+							options={filters.poi}
 							onChange={this.handleFilterChange}
-							value={qfilters.pois.map(x => ({label: x, value: x}))}
+							value={qfilters.poi.map(x => ({label: x, value: x}))}
 						/>
 					</div>
 					<div className="form form-group">
@@ -298,10 +300,10 @@ class SearchResults extends React.Component {
 							className="basic-single"
 							classNamePrefix="select"
 							isClearable={true}
-							name="locations"
-							options={filters.locations}
+							name="location"
+							options={filters.location}
 							onChange={this.handleFilterChange}
-							value={qfilters.locations.map(x => ({label: x, value: x}))}
+							value={qfilters.location.map(x => ({label: x, value: x}))}
 						/>
 					</div>
 					<div className="form form-group">
@@ -318,16 +320,29 @@ class SearchResults extends React.Component {
 						/>
 					</div>
 					<div className="form form-group">
-						<label htmlFor='hashtags'>Sentiments</label>
+						<label htmlFor='sentiment'>Sentiments</label>
 						<Select
 							isMulti={true}
 							className="basic-single"
 							classNamePrefix="select"
 							isClearable={true}
-							name="sentiments"
-							options={filters.sentiments}
+							name="sentiment"
+							options={filters.sentiment}
 							onChange={this.handleFilterChange}
-							value={qfilters.sentiments.map(x => ({label: x, value: x}))}
+							value={qfilters.sentiment.map(x => ({label: x, value: x}))}
+						/>
+					</div>
+					<div className="form form-group">
+						<label htmlFor='language'>Language</label>
+						<Select
+							isMulti={true}
+							className="basic-single"
+							classNamePrefix="select"
+							isClearable={true}
+							name="language"
+							options={filters.language}
+							onChange={this.handleFilterChange}
+							value={qfilters.language.map(x => ({label: x, value: x}))}
 						/>
 					</div>
 					<div className="row" style={{textAlign: 'center'}}>
@@ -344,7 +359,6 @@ class SearchResults extends React.Component {
 	}
 	searchBox() {
 		const { search } = this.state
-		console.log(search)
 		return <div className="row">
 			<form onSubmit={this.handleSearchSubmit}>
 				<div className="form form-group">
@@ -386,8 +400,8 @@ class SearchResults extends React.Component {
 			key='location'
 			data={[
 			{
-				y: Object.values(analysis.locations),
-				x: Object.keys(analysis.locations),
+				y: Object.values(analysis.location),
+				x: Object.keys(analysis.location),
 				type: 'bar',
 			},
 			]}
@@ -398,8 +412,8 @@ class SearchResults extends React.Component {
 			key='sentiment'
 			data={[
 			{
-				values: Object.values(analysis.sentiments),
-				labels: Object.keys(analysis.sentiments),
+				values: Object.values(analysis.sentiment),
+				labels: Object.keys(analysis.sentiment),
 				type: 'pie',
 				marker: {color: 'red'},
 			},
@@ -411,8 +425,8 @@ class SearchResults extends React.Component {
 			key='pois'
 			data={[
 			{
-				values: Object.values(analysis.pois),
-				labels: Object.keys(analysis.pois),
+				values: Object.values(analysis.poi),
+				labels: Object.keys(analysis.poi),
 				type: 'pie',
 				marker: {color: 'red'},
 			},
