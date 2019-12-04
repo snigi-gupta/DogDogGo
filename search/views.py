@@ -148,10 +148,10 @@ class SearchQueryView(APIView):
             hl_vals = []
             for x in hl.values():
                 hl_vals.extend(x)
-                if len(hl_vals) > 0:
-                    hl_text = hl_vals[0]
-                else:
-                    hl_text = doc['full_text'][0]
+            if len(hl_vals) > 0:
+                hl_text = hl_vals[0]
+            else:
+                hl_text = doc['full_text']
             tweet_hash['id'] = doc['id']
             tweet_hash['hl_text'] = hl_text
             tweet_hash['sentiment'] = doc['sentiment'][0]
@@ -181,7 +181,7 @@ class SearchQueryView(APIView):
                 'sentiment': sentiment_count,
                 'poi': poi_count,
                 'location': location_count,
-                'sources': source_count,
+                'source': source_count,
                 'hashtags': hashtag_count
             },
             'total': total
@@ -229,6 +229,7 @@ class SearchQueryView(APIView):
         poi = []
         sentiment = []
         if filters:
+            filters = json.loads(filters)
             hashtags = filters.get('hashtags', None)
             location = filters.get('location', None)
             poi = filters.get('poi', None)
