@@ -45,6 +45,83 @@ from collections import defaultdict
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+def plot_data(response, highlighting, facet):
+
+    hl_text = ""
+    docs = response.get('docs', None)
+    total = response['numFound']
+    facet_fields = facet['facet_fields']
+    sentiment_count = defaultdict(int)
+    poi_count = defaultdict(int)
+    location_count = defaultdict(int)
+    source_count = defaultdict(int)
+    hashtag_count = defaultdict(int)
+    tweets = []
+    for doc in docs:
+        tweet_hash = {}
+        doc_id = doc['id']
+        hl = highlighting.get(doc_id, {})
+        hl_vals = []
+        for x in hl.values():
+            hl_vals.extend(x)
+        if len(hl_vals) > 0:
+            hl_text = hl_vals[0]
+        else:
+            hl_text = doc['full_text']
+        tweet_hash['id'] = doc['id']
+        tweet_hash['hl_text'] = hl_text
+        tweet_hash['sentiment'] = doc['sentiment'][0]
+        tweet_hash['user_name'] = doc['user_name'][0]
+        tweet_hash['verified'] = doc['verified'][0]
+        tweet_hash['poi_name'] = doc['poi_name'][0]
+        tweet_hash['created_at'] = doc['created_at'][0]
+        tweet_hash['retweet_count'] = doc['retweet_count'][0]
+        # tweet_hash['reply_count'] = doc['reply_count'][0]
+        tweet_hash['article_count'] = random.randint(0, 10)
+
+        # sentiment_count[doc['sentiment'][0]] += 1
+        # if 'hashtags' in doc:
+        #     for hashtag in doc['hashtags']:
+        #         hashtag_count[hashtag] += 1
+        #
+        # location_count[doc['poi_country'][0]] += 1
+        # poi_count[doc['poi_name'][0]] += 1
+
+        # source_count[doc['source'][0]] +=1
+
+        tweets.append(tweet_hash)
+
+    sentiment = {}
+    poi = {}
+    hashtags = {}
+    source = {}
+    location = {}
+    language = {}
+    for key in facet_fields.keys():
+        temp = {facet_fields[key][i]: facet_fields[key][i + 1] for i in range(0, len(facet_fields[key]), 2)}
+        if key == "hashtags": hashtags = temp
+        if key == "sentiment": sentiment = temp
+        if key == "poi_name": poi = temp
+        if key == "poi_country": location = temp
+        if key == "lang": language = temp
+        if key == "source": source = temp
+
+    results = {
+        'tweets': tweets,
+        'analysis': {
+            'sentiment': sentiment,
+            'poi': poi,
+            'location': location,
+            'source': source,
+            'hashtags': hashtags,
+            'language': language
+        },
+        'total': total
+    }
+    return results
+
+
 class SearchQueryView(APIView):
 
     def translate_query(self, text):
@@ -130,64 +207,6 @@ class SearchQueryView(APIView):
 
         return filter_string
 
-    def plot_data(self, response, highlighting):
-
-        hl_text = ""
-        docs = response.get('docs', None)
-        total = response['numFound']
-        sentiment_count = defaultdict(int)
-        poi_count = defaultdict(int)
-        location_count = defaultdict(int)
-        source_count = defaultdict(int)
-        hashtag_count = defaultdict(int)
-        tweets = []
-        for doc in docs:
-            tweet_hash = {}
-            doc_id = doc['id']
-            hl = highlighting.get(doc_id, {})
-            hl_vals = []
-            for x in hl.values():
-                hl_vals.extend(x)
-            if len(hl_vals) > 0:
-                hl_text = hl_vals[0]
-            else:
-                hl_text = doc['full_text']
-            tweet_hash['id'] = doc['id']
-            tweet_hash['hl_text'] = hl_text
-            tweet_hash['sentiment'] = doc['sentiment'][0]
-            tweet_hash['user_name'] = doc['user_name'][0]
-            tweet_hash['verified'] = doc['verified'][0]
-            tweet_hash['poi_name'] = doc['poi_name'][0]
-            tweet_hash['created_at'] = doc['created_at'][0]
-            tweet_hash['retweet_count'] = doc['retweet_count'][0]
-            # tweet_hash['reply_count'] = doc['reply_count'][0]
-            tweet_hash['article_count'] = random.randint(0, 10)
-
-            sentiment_count[doc['sentiment'][0]] += 1
-            if 'hashtags' in doc:
-                for hashtag in doc['hashtags']:
-                    hashtag_count[hashtag] += 1
-
-            location_count[doc['poi_country'][0]] += 1
-            poi_count[doc['poi_name'][0]] += 1
-
-            source_count[doc['source'][0]] +=1
-
-            tweets.append(tweet_hash)
-
-        results = {
-            'tweets': tweets,
-            'analysis': {
-                'sentiment': sentiment_count,
-                'poi': poi_count,
-                'location': location_count,
-                'source': source_count,
-                'hashtags': hashtag_count
-            },
-            'total': total
-        }
-        return results
-
 
     def get(self, request):
 
@@ -204,7 +223,7 @@ class SearchQueryView(APIView):
         query_field = "&qf=full_text%5E0.00001%20"
         stopwords = "&stopwords=true"
         facet_search = "&facet.field=hashtags&facet.field=lang&facet.field=poi_name&facet.field=poi_country&" \
-                       "facet.field=sentiment&facet.sort=count&facet.limit=10&facet=on&facet.mincount=1"
+                       "facet.field=sentiment&facet.field=source&facet.sort=count&facet.limit=10&facet=on&facet.mincount=1"
 
         # fl_score = "&fl=id%2Cscore%2Cfull_text&wt=json&indent=true&rows=20"
         inurl = ""
@@ -228,17 +247,20 @@ class SearchQueryView(APIView):
         location = []
         poi = []
         sentiment = []
+        source = []
         if filters:
             filters = json.loads(filters)
             hashtags = filters.get('hashtags', None)
             location = filters.get('location', None)
             poi = filters.get('poi', None)
             sentiment = filters.get('sentiment', None)
+            source = filters.get('source', None)
 
         query_hashtag = self.process_filter(hashtags) if hashtags else None
         query_location = self.process_filter(location) if location else None
         query_poi = self.process_filter(poi) if poi else None
         query_sentiment = self.process_filter(sentiment) if sentiment else None
+        query_source = self.process_filter(source) if source else None
 
         # testing
         # more_like_this = True
@@ -293,6 +315,9 @@ class SearchQueryView(APIView):
             if sentiment:
                 temp_array.append("sentiment:" + query_sentiment)
                 temp_flag = True
+            if source:
+                temp_array.append("source:" + query_source)
+                temp_flag = True
 
             if temp_flag:
                 inurl = localhost + "processed_text:" + query + and_seperator + and_seperator.join(temp_array) + \
@@ -308,11 +333,27 @@ class SearchQueryView(APIView):
         res = json.load(data)
         response = res['response']
         highlighting = res['highlighting']
-        results = self.plot_data(response, highlighting)
+        facet = res['facet_counts']
+        results = plot_data(response, highlighting, facet)
         return Response(results)
 
 # Create your views here.
-class ListQueryView(APIView):
+class FetchRepliesView(APIView):
     def get(self, request):
-        return Response("Hello, world. You're at the search index.")
+        core_name = "DDG"
+        select_q = "/select?q="
+        localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
+        facet_search = "&facet.field=hashtags&facet.field=lang&facet.field=poi_name&facet.field=poi_country&" \
+                       "facet.field=sentiment&facet.field=source&facet.sort=count&facet.limit=10&facet=on&facet.mincount=1"
+
+
+        query = request.GET.get('id', None)
+        inurl = localhost + 'in_reply_to_status_id:' + query + facet_search + '&rows=20'
+        data = urllib.request.urlopen(inurl)
+        res = json.load(data)
+        response = res['response']
+        facet = res['facet_counts']
+        results = plot_data(response, {}, facet)
+
+        return Response(results)
 

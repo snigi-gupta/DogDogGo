@@ -45,11 +45,12 @@ for file in onlyfiles:
     with open(file_path) as f:
         data = json.load(f)
     new_data = []
+    languages = ["en", "hi", "pt", "es"]
     for d in data:
 
-        if d.get('retweeted_status'):
+        # if d.get('retweeted_status'):
             # skipping since a retweet and no new opinion
-            continue
+            # continue
         t = {}
         fillers = []
 
@@ -76,30 +77,38 @@ for file in onlyfiles:
         t['verified'] = d.get('verified')
         t['poi_country'] = d.get('country')
 
+        if d.get('country') == "Hong Kong":
+            t['poi_country'] = "HongKong"
+        if d.get('country') == "Vatican City":
+            t['poi_country'] = "VaticanCity"
+
+        if d.get('lang') not in languages:
+            t['lang'] = "others"
+
         # language detection
-        if t.get('lang') == "en":
+        if d.get('lang') == "en":
             t.update({"text_en": processed_text})
-        elif t.get('lang') == "hi":
+        elif d.get('lang') == "hi":
             t.update({"text_hi": processed_text})
-        elif t.get('lang') == "pt":
+        elif d.get('lang') == "pt":
             t.update({"text_pt": processed_text})
-        elif t.get('lang') == "es":
+        elif d.get('lang') == "es":
             t.update({"text_es": processed_text})
         else:
-            if t.get('poi_country') == 'India':
+            if d.get('poi_country') == 'India':
                 t.update({"text_hi": processed_text})
-            elif t.get('poi_country') == 'USA':
+            elif d.get('poi_country') == 'USA':
                 t.update({"text_en": processed_text})
-            elif t.get('poi_country') == 'Brazil':
+            elif d.get('poi_country') == 'Brazil':
                 t.update({"text_pt": processed_text})
                 # t.update({"text_es": processed_text})
-            elif t.get('poi_country') == 'Columbia':
+            elif d.get('poi_country') == 'Columbia':
                 t.update({"text_es": processed_text})
-            elif t.get('poi_country') == 'Hong Kong':
+            elif d.get('poi_country') == 'Hong Kong':
                 t.update({"text_en": processed_text})
-            elif t.get('poi_country') == 'Spain':
+            elif d.get('poi_country') == 'Spain':
                 t.update({"text_es": processed_text})
-            elif t.get('poi_country') == 'Vatican City':
+            elif d.get('poi_country') == 'Vatican City':
                 t.update({"text_es": processed_text})
 
         # nested keys
