@@ -217,8 +217,10 @@ class SearchQueryView(APIView):
         # analytics = request.GET.get('analytics', False)
 
         start = request.GET.get('start', 0)
-        end = request.GET.get('end', 200000000)
-        limit = "&rows=" + end + "&start=" + start
+        end = request.GET.get('end', 0)
+        _end = 2000000
+
+        limit = "&rows=" + _end + "&start=" + start
 
         # filters
         hashtags = []
@@ -305,7 +307,7 @@ class SearchQueryView(APIView):
         response = res['response']
         highlighting = res['highlighting']
         results = self.plot_data(response, highlighting)
-        return Response(results)
+        return Response(results[start:end)
 
 # Create your views here.
 class ListQueryView(APIView):
