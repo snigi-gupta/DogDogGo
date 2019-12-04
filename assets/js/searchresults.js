@@ -115,7 +115,6 @@ class SearchResults extends React.Component {
 		let start = currentPage * LIMIT
 		let end = start + LIMIT
 		let stime = performance.now()
-		console.log(DEFAULTQFILTERS)
 		actions.fetchTweets({qfilters: qfilters, search: search, start: start, end: end, analyticsTrue: fetchAnalytics, mlt_flag: query.mlt_flag})
 			.then((res) => {
 				console.log(res)
