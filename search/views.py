@@ -312,7 +312,19 @@ class SearchQueryView(APIView):
         return Response(results)
 
 # Create your views here.
-class ListQueryView(APIView):
+class FetchReplies(APIView):
     def get(self, request):
-        return Response("Hello, world. You're at the search index.")
+        core_name = "DDG"
+        select_q = "/select?q="
+        localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
+        query = request.GET.get('id', None)
+        inurl = localhost + 'in_reply_to_status_id:' + query + '&rows=20'
+        data = urllib.request.urlopen(inurl)
+        res = json.load(data)
+        response = res['response']
+        result = {
+            'total': response['numFound'],
+            'docs': response['docs']
+        }
+        return Response(result)
 
