@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import SearchQueryView
+from .views import SearchQueryView, FetchRepliesView
 
 urlpatterns = [
     path('', SearchQueryView.as_view(), name='search'),
-    path('fetch_replies', FetchReplies.as_view(), name='replies'),
+    path('fetch_replies', FetchRepliesView.as_view(), name='replies'),
 ]

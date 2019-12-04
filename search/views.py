@@ -338,19 +338,22 @@ class SearchQueryView(APIView):
         return Response(results)
 
 # Create your views here.
-class FetchReplies(APIView):
+class FetchRepliesView(APIView):
     def get(self, request):
         core_name = "DDG"
         select_q = "/select?q="
         localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
+        facet_search = "&facet.field=hashtags&facet.field=lang&facet.field=poi_name&facet.field=poi_country&" \
+                       "facet.field=sentiment&facet.field=source&facet.sort=count&facet.limit=10&facet=on&facet.mincount=1"
+
+
         query = request.GET.get('id', None)
-        inurl = localhost + 'in_reply_to_status_id:' + query + '&rows=20'
+        inurl = localhost + 'in_reply_to_status_id:' + query + facet_search + '&rows=20'
         data = urllib.request.urlopen(inurl)
         res = json.load(data)
         response = res['response']
-        result = {
-            'total': response['numFound'],
-            'docs': response['docs']
-        }
-        return Response(result)
+        facet = res['facet_counts']
+        results = plot_data(response, {}, facet)
+
+        return Response(results)
 
