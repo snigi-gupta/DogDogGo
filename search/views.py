@@ -221,7 +221,7 @@ class SearchQueryView(APIView):
         query_field = "&qf=full_text%5E0.00001%20"
         stopwords = "&stopwords=true"
         facet_search = "&facet.field=hashtags&facet.field=lang&facet.field=poi_name&facet.field=poi_country&" \
-                       "facet.field=sentiment&facet.sort=count&facet.limit=10&facet=on&facet.mincount=1"
+                       "facet.field=sentiment&facet.field=source&facet.sort=count&facet.limit=10&facet=on&facet.mincount=1"
 
         # fl_score = "&fl=id%2Cscore%2Cfull_text&wt=json&indent=true&rows=20"
         inurl = ""
@@ -245,6 +245,7 @@ class SearchQueryView(APIView):
         location = []
         poi = []
         sentiment = []
+        source = []
         if filters:
             filters = json.loads(filters)
             hashtags = filters.get('hashtags', None)
