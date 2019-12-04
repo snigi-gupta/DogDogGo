@@ -262,7 +262,7 @@ class SearchQueryView(APIView):
 
         # processing query
         if more_like_this:
-            inurl = localhost + "%7B!mlt%20q%3Did%7D" + query + highlight_search+ limit + fl_score
+            inurl = localhost + "%7B!mlt%20q%3Did%7D" + query + highlight_search + limit + fl_score
         else:
             query = self.process_query(query)
             query_en = self.process_query(query_en)
@@ -291,7 +291,8 @@ class SearchQueryView(APIView):
                 temp_flag = True
 
             if temp_flag:
-                inurl = localhost + "processed_text:" + query + and_seperator + "AND".join(temp_array)
+                inurl = localhost + "processed_text:" + query + and_seperator + "AND".join(temp_array) + \
+                        highlight_search + limit + fl_score
 
             elif not inurl:
                 inurl = localhost + "processed_text:" + query + or_seperator + "text_en:" + query_en + or_seperator + \
