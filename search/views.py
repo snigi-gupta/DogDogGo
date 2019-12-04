@@ -178,9 +178,9 @@ class SearchQueryView(APIView):
         results = {
             'tweets': tweets,
             'analysis': {
-                'sentiments': sentiment_count,
-                'pois': poi_count,
-                'locations': location_count,
+                'sentiment': sentiment_count,
+                'poi': poi_count,
+                'location': location_count,
                 'sources': source_count,
                 'hashtags': hashtag_count
             },
