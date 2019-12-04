@@ -275,6 +275,7 @@ class SearchResults extends React.Component {
 		event.preventDefault()
 		const { history } = this.props
 		let current_q = this.parseQuery()
+		this.setState({qfilters: DEFAULTQFILTERS})
 		history.push({
 			pathname: '/search',
 			search: this.genQueryString({search: current_q['search']})
