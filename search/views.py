@@ -251,11 +251,13 @@ class SearchQueryView(APIView):
             location = filters.get('location', None)
             poi = filters.get('poi', None)
             sentiment = filters.get('sentiment', None)
+            source = filters.get('source', None)
 
         query_hashtag = self.process_filter(hashtags) if hashtags else None
         query_location = self.process_filter(location) if location else None
         query_poi = self.process_filter(poi) if poi else None
         query_sentiment = self.process_filter(sentiment) if sentiment else None
+        query_source = self.process_filter(source) if source else None
 
         # testing
         # more_like_this = True
@@ -309,6 +311,9 @@ class SearchQueryView(APIView):
                 temp_flag = True
             if sentiment:
                 temp_array.append("sentiment:" + query_sentiment)
+                temp_flag = True
+            if source:
+                temp_array.append("source:" + query_source)
                 temp_flag = True
 
             if temp_flag:
