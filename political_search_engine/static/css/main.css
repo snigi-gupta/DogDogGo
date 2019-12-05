@@ -189,3 +189,32 @@
 .search-results-box {
 	padding-left: 3.5rem;
 }
+.user-info-card {
+	clear: both;
+	width: 40%;
+	margin: 0 auto;
+}
+.bv-tab-list-style-2 {
+	text-align: center;
+	padding: 3rem 0;
+	border-bottom: 1px solid #979797;
+	list-style: none;
+	text-decoration: none;
+}
+.bv-tab-list-style-2 li a {
+	padding: 1rem 3rem;
+	display: block;
+	font-size: 1.4rem;
+	color: #252E31;
+	border-radius: 3px;
+}
+.bv-tab-list-style-2 li a.active {
+	border: 1px solid #252E31;
+}
+.bv-tab-list-style-2 li:first-child {
+	margin-left: 0;
+}
+.bv-tab-list-style-2 li {
+	display: inline-block;
+	margin: 0 1rem;
+}

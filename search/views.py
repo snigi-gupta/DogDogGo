@@ -1,43 +1,18 @@
 from django.shortcuts import render
-'''
 from django.http import HttpResponse, JsonResponse
-import os
-import json
 import random
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SENTIMENTS = ['positive', 'negative', 'neutral']
-
-# Create your views here.
-def index(request):
-	f = open(f'{BASE_DIR}/tweets/BarackObama.json')
-	data = json.loads(f.read())
-	data = data[:25]
-	for i in range(0, len(data)):
-		data[i]['sentiment'] = random.choice(SENTIMENTS)
-		data[i]['topic'] = 'dummy'
-		data[i]['impact'] = {'articles': random.randint(0, 50), 'replies': random.randint(0, 50)}
-	return JsonResponse(data, safe=False)
-'''
-import random
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from .models import Query
 from .serializers import QuerySerializer
-from django.http import HttpResponse, JsonResponse
-from urllib.parse import quote
 import pdb
-import json
-import urllib.request
 import re
+from rest_framework.response import Response
+from rest_framework.views import APIView
+import urllib.request
 from urllib.parse import quote
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from django.http import HttpResponse, JsonResponse
-import os
 import json
-import random
 import os, requests, uuid
 from collections import defaultdict
+import pdb
 
 # Create your views here.
 # def index(request):
@@ -379,8 +354,10 @@ class FetchUserTweetsView(APIView):
                        "facet.field=sentiment&facet.field=source&facet.sort=count&facet.limit=10&facet=on&facet.mincount=1"
 
 
+        and_seperator = "%20AND%20"
         query = request.GET.get('poi_name', None)
-        inurl = localhost + 'poi_name:' + query + facet_search + '&rows=20'
+        inurl = localhost + 'poi_name:' + query + and_seperator + 'verified:true' + facet_search + '&rows=20'
+        print(inurl)
         data = urllib.request.urlopen(inurl)
         res = json.load(data)
         response = res['response']
@@ -389,7 +366,7 @@ class FetchUserTweetsView(APIView):
 
         return Response(results)
 
-class FetchUserNewsView(APIView):
+class FetchNewsView(APIView):
     def get(self, request):
         core_name = "NewsArticles"
         select_q = "/select?q="
@@ -418,3 +395,31 @@ class FetchUserNewsView(APIView):
             news.append(t)
 
         return Response(news)
+
+class FetchUserNewsView(APIView):
+    def get(self, request):
+        core_name = "NewsArticles"
+        select_q = "/select?q="
+        localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
+        query = request.GET.get('poi_name', None)
+        inurl = localhost + 'related_to_poi_name:' + query
+
+        data = urllib.request.urlopen(inurl)
+        res = json.load(data)
+        doc = res['response'].get('docs', [None])[1]
+        news = []
+        num_articles = len(doc['articles.title'])
+        for i in range(num_articles):
+            t = dict()
+            t['title'] = doc['articles.title'][i]
+            t['source'] = doc['articles.source.name'][i]
+            t['author'] = doc['articles.author'][i]
+            t['description'] = doc['articles.description'][i]
+            t['url'] = doc['articles.url'][i]
+            t['url_to_image'] = doc['articles.urlToImage'][i]
+            t['published_data'] = doc['articles.publishedAt'][i]
+            t['content'] = doc['articles.content'][i]
+            t['id'] = doc['tweet_id']
+            t['poi_name'] = doc['related_to_poi_name']
+            news.append(t)
+        return Response(all_news)
