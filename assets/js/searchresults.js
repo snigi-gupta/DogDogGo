@@ -19,6 +19,7 @@ import {
 	faRetweet,
 	faSearch
 } from '@fortawesome/free-solid-svg-icons'
+import { Link } from 'react-router-dom'
 import moment from 'moment'
 import ExternalImage from 'react-external-image'
 import ReactPaginate from 'react-paginate'
@@ -135,7 +136,7 @@ class SearchResults extends React.Component {
 					loading: false,
 					timetaken: timetaken,
 					qfilters: Object.assign({}, DEFAULTQFILTERS, query.qfilters || {}),
-					search: search
+					search: query.mlt_flag ? "" : search
 				})
 			})
 			.catch((res) => {
@@ -149,6 +150,83 @@ class SearchResults extends React.Component {
 	replyQuickLinks(tweet) {
 		return <React.Fragment>
 		</React.Fragment>
+	}
+	poiTweetCard(tweet) {
+		return <div key={`${tweet.id}-${i}`} className="tweet-card">
+			<div className="row">
+				<div className="col-md-1">
+					<ExternalImage
+						src={tweet.profile_url_https}
+						fallbackImages={['/static/img/twitter_placeholder.jpg']}
+						className="img-46 img-rounded"
+					/>
+				</div>
+				<div className="col-md-10 tweet-card-text">
+					<div className="row">
+						<Link to={`/poi/${tweet.poi_name}`}>
+							<span className="text-bold">{tweet.user_name}</span>
+						</Link>
+						{'  '}
+						{ tweet.verified && 
+							<FontAwesomeIcon icon={faCheckCircle} className="verified-circle"/>
+						}{'  '}
+						<span className="text-grey">@{tweet.poi_name}</span>
+						<span className="text-grey">
+							{' | '}
+							{moment(tweet.created_at).fromNow()}
+						</span>
+					</div>
+					<div className="row" dangerouslySetInnerHTML={{__html: tweet.hl_text}}>
+					</div>
+					{ tweet.verified ?
+						this.poiQuickLinks()
+						:
+						this.replyQuickLinks()
+					}
+					<div className="row tweet-card-quicklinks">
+						<div className="col-md-3">
+							<FontAwesomeIcon
+								icon={sentimentEmoticonHash[sentiment]['icon']}
+								className={sentimentEmoticonHash[sentiment]['classname']}
+							/>
+							{' '}
+							<span>{sentimentEmoticonHash[sentiment]['label']}</span>
+						</div>
+						<div className="col-md-3">
+							<FontAwesomeIcon icon={faRetweet}/>
+							{' '}
+							<span>{tweet.retweet_count}</span>
+						</div>
+						<div className="col-md-3">
+							<FontAwesomeIcon icon={faReply}/>
+							{' '}
+							{tweet['retweet_count']}
+						</div>
+						<div className="col-md-3">
+							<FontAwesomeIcon icon={faNewspaper}/>
+							{' '}
+							{tweet.article_count}
+						</div>
+					</div>
+					<div className="row tweet-card-more-details">
+						<div className="col-md-6">
+							Detailed Analysis
+							{'   '}
+							<FontAwesomeIcon icon={faChevronRight}/>
+						</div>
+						<div className="col-md-6">
+							<a onClick={this.mlt.bind(this, tweet.id)}>
+								More Like This
+								{'   '}
+								<FontAwesomeIcon icon={faChevronRight}/>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div className="col-md-1">
+				</div>
+			</div>
+		</div>
 	}
 	searchElements() {
 		const { tweets } = this.state
@@ -165,11 +243,13 @@ class SearchResults extends React.Component {
 					</div>
 					<div className="col-md-10 tweet-card-text">
 						<div className="row">
-							<span className="text-bold">{tweet.user_name}</span>{'  '}
+							<Link to={`/poi/${tweet.poi_name}`}>
+								<span className="text-bold">{tweet.user_name}</span>{'  '}
+							</Link>
 							{ tweet.verified && 
 								<FontAwesomeIcon icon={faCheckCircle} className="verified-circle"/>
 							}{'  '}
-							<span className="text-grey">@{tweet.user_name}</span>
+							<span className="text-grey">@{tweet.user_screen_name}</span>
 							<span className="text-grey">
 								{' | '}
 								{moment(tweet.created_at).fromNow()}

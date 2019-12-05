@@ -131,6 +131,9 @@
 	overflow-y: scroll;
 	overflow-x: hidden;
 }
+.filter-box > h2 {
+	margin-top: 10px;
+}
 .center-dom {
 	clear: both;
 	margin: 0 auto;
