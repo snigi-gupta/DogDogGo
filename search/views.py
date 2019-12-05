@@ -369,16 +369,51 @@ class FetchRepliesView(APIView):
 
         return Response(results)
 
-class FetchNewsView(APIView):
+class FetchUserTweetsView(APIView):
     def get(self, request):
-        core_name = "NewsArticles"
+        core_name = "DDG"
         select_q = "/select?q="
         localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
-        articles_search = ""
-        query = request.GET.get('id', None)
-        inurl = localhost + 'in_reply_to_status_id:' + query + facet_search + '&rows=20'
+        facet_search = "&facet.field=hashtags&facet.field=lang&facet.field=poi_name&facet.field=poi_country&" \
+                       "facet.field=sentiment&facet.field=source&facet.sort=count&facet.limit=10&facet=on&facet.mincount=1"
+
+
+        query = request.GET.get('poi_name', None)
+        inurl = localhost + 'poi_name:' + query + facet_search + '&rows=20'
         data = urllib.request.urlopen(inurl)
         res = json.load(data)
         response = res['response']
         facet = res['facet_counts']
         results = plot_data(response, {}, facet)
+
+        return Response(results)
+
+class FetchUserNewsView(APIView):
+    def get(self, request):
+        core_name = "NewsArticles"
+        select_q = "/select?q="
+        localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
+        query = request.GET.get('id', None)
+        inurl = localhost + 'tweet_id:' + query
+
+        data = urllib.request.urlopen(inurl)
+        res = json.load(data)
+        doc = res['response'].get('docs', [None])[0]
+
+        num_articles = len(doc['articles.title'])
+        news = []
+        for i in range(num_articles):
+            t = dict()
+            t['title'] = doc['articles.title'][i]
+            t['source'] = doc['articles.source.name'][i]
+            t['author'] = doc['articles.author'][i]
+            t['description'] = doc['articles.description'][i]
+            t['url'] = doc['articles.url'][i]
+            t['url_to_image'] = doc['articles.urlToImage'][i]
+            t['published_data'] = doc['articles.publishedAt'][i]
+            t['content'] = doc['articles.content'][i]
+            t['id'] = doc['tweet_id']
+            t['poi_name'] = doc['related_to_poi_name']
+            news.append(t)
+
+        return Response(news)
