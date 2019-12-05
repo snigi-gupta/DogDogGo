@@ -219,9 +219,9 @@ class SearchQueryView(APIView):
         core_name = "DDG"
         select_q = "/select?q="
         localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
-        highlight_search = "&hl=on&hl.simple.pre=%3Cspan%20class%3D%22tweet-hl%22%3E&hl.simple.post=%3C%2Fspan%3E"
-        custom_search = "&defType=edismax&pf=processed_text%5E2&ps=5&hl.fragsize=300&hl.fl=full_text,text_*" + \
-                        highlight_search
+        highlight_search = "&hl.fl=full_text,text_*&hl=on&hl.simple.pre=%3Cspan%20class%3D%22tweet-hl%22%3E&" \
+                           "hl.simple.post=%3C%2Fspan%3E"
+        custom_search = "&defType=edismax&pf=processed_text%5E2&ps=5&hl.fragsize=300" + highlight_search
         fl_score = "&fl=*&wt=json&indent=true"
         query_field = "&qf=full_text%5E0.00001%20"
         stopwords = "&stopwords=true"
