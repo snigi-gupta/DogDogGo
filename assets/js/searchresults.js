@@ -16,7 +16,8 @@ import {
 	faChevronLeft,
 	faChevronRight,
 	faNewspaper,
-	faRetweet
+	faRetweet,
+	faSearch
 } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment'
 import ExternalImage from 'react-external-image'
@@ -141,6 +142,14 @@ class SearchResults extends React.Component {
 				console.log(res)
 			})
 	}
+	poiQuickLinks(tweet) {
+		return <React.Fragment>
+		</React.Fragment>
+	}
+	replyQuickLinks(tweet) {
+		return <React.Fragment>
+		</React.Fragment>
+	}
 	searchElements() {
 		const { tweets } = this.state
 		return tweets.map((tweet, i) => {
@@ -149,7 +158,7 @@ class SearchResults extends React.Component {
 				<div className="row">
 					<div className="col-md-1">
 						<ExternalImage
-							src={tweet.userProfileImage}
+							src={tweet.profile_url_https}
 							fallbackImages={['/static/img/twitter_placeholder.jpg']}
 							className="img-46 img-rounded"
 						/>
@@ -168,6 +177,11 @@ class SearchResults extends React.Component {
 						</div>
 						<div className="row" dangerouslySetInnerHTML={{__html: tweet.hl_text}}>
 						</div>
+						{ tweet.verified ?
+							this.poiQuickLinks()
+							:
+							this.replyQuickLinks()
+						}
 						<div className="row tweet-card-quicklinks">
 							<div className="col-md-3">
 								<FontAwesomeIcon
@@ -185,12 +199,12 @@ class SearchResults extends React.Component {
 							<div className="col-md-3">
 								<FontAwesomeIcon icon={faReply}/>
 								{' '}
-								{tweet['retweet_count']} Replies
+								{tweet['retweet_count']}
 							</div>
 							<div className="col-md-3">
 								<FontAwesomeIcon icon={faNewspaper}/>
 								{' '}
-								{tweet['retweet_count']} Articles
+								{tweet.article_count}
 							</div>
 						</div>
 						<div className="row tweet-card-more-details">
@@ -387,10 +401,11 @@ class SearchResults extends React.Component {
 					<input
 						name="search"
 						type="text"
-						className="form-control"
+						className="form-control search-results-box"
 						value={search}
 						onChange={this.handleSearchChange}
 					/>
+					<FontAwesomeIcon icon={faSearch} className="search-results-icon"/>
 				</div>
 			</form>
 		</div>

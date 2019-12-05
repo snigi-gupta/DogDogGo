@@ -73,12 +73,18 @@ def plot_data(response, highlighting, facet):
         tweet_hash['hl_text'] = hl_text
         tweet_hash['sentiment'] = doc['sentiment'][0]
         tweet_hash['user_name'] = doc['user_name'][0]
+        tweet_hash['user_screen_name'] = doc['user_screen_name'][0]
+        tweet_hash['user_description'] = doc.get('user_description', [None])[0]
+        tweet_hash['user_location'] = doc.get('user_location', [None])[0]
         tweet_hash['verified'] = doc['verified'][0]
         tweet_hash['poi_name'] = doc['poi_name'][0]
         tweet_hash['created_at'] = doc['created_at'][0]
         tweet_hash['retweet_count'] = doc['retweet_count'][0]
         # tweet_hash['reply_count'] = doc['reply_count'][0]
         tweet_hash['article_count'] = random.randint(0, 10)
+        tweet_hash['profile_url_https'] = doc['user_profile_image_url_https'][0]
+        tweet_hash['profile_url'] = doc['user_profile_image_url'][0]
+
 
         # sentiment_count[doc['sentiment'][0]] += 1
         # if 'hashtags' in doc:
@@ -216,9 +222,9 @@ class SearchQueryView(APIView):
         core_name = "DDG"
         select_q = "/select?q="
         localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
-        highlight_search = "&hl=on&hl.simple.pre=%3Cspan%20class%3D%22tweet-hl%22%3E&hl.simple.post=%3C%2Fspan%3E"
-        custom_search = "&defType=edismax&pf=processed_text%5E2&ps=5&hl.fragsize=300&hl.fl=full_text,text_*" + \
-                        highlight_search
+        highlight_search = "&hl.fl=full_text,text_*&hl=on&hl.simple.pre=%3Cspan%20class%3D%22tweet-hl%22%3E&" \
+                           "hl.simple.post=%3C%2Fspan%3E"
+        custom_search = "&defType=edismax&pf=processed_text%5E2&ps=5&hl.fragsize=300" + highlight_search
         fl_score = "&fl=*&wt=json&indent=true"
         query_field = "&qf=full_text%5E0.00001%20"
         stopwords = "&stopwords=true"
@@ -320,8 +326,9 @@ class SearchQueryView(APIView):
                 temp_flag = True
 
             if temp_flag:
-                inurl = localhost + "processed_text:" + query + and_seperator + and_seperator.join(temp_array) + \
-                        highlight_search + facet_search + limit + fl_score
+                inurl = localhost + "(" + "processed_text:" + query + or_seperator + "text_en:" + query_en + or_seperator + \
+                        "text_hi:" + query_hi + "text_pt:" + query_pt + or_seperator + "text_es:" + query_es + ")" + \
+                        and_seperator + and_seperator.join(temp_array) + highlight_search + facet_search + limit + fl_score
 
             elif not inurl:
                 inurl = localhost + "processed_text:" + query + or_seperator + "text_en:" + query_en + or_seperator + \
