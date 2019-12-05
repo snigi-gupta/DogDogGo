@@ -217,7 +217,6 @@ class SearchQueryView(APIView):
     def get(self, request):
 
         # pdb.set_trace()
-        response = {}
         # contants
         core_name = "DDG"
         select_q = "/select?q="
@@ -261,12 +260,14 @@ class SearchQueryView(APIView):
             poi = filters.get('poi', None)
             sentiment = filters.get('sentiment', None)
             source = filters.get('source', None)
+            language = filters.get('language',None)
 
         query_hashtag = self.process_filter(hashtags) if hashtags else None
         query_location = self.process_filter(location) if location else None
         query_poi = self.process_filter(poi) if poi else None
         query_sentiment = self.process_filter(sentiment) if sentiment else None
         query_source = self.process_filter(source) if source else None
+        query_language = self.process_filter(language) if language else None
 
         # testing
         # more_like_this = True
@@ -323,6 +324,9 @@ class SearchQueryView(APIView):
                 temp_flag = True
             if source:
                 temp_array.append("source:" + query_source)
+                temp_flag = True
+            if language:
+                temp_array.append("language:" + query_language)
                 temp_flag = True
 
             if temp_flag:
