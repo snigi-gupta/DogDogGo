@@ -368,8 +368,28 @@ class FetchRepliesView(APIView):
 
         return Response(results)
 
-class FetchNewsView(APIView):
+class FetchUserTweetsView(APIView):
     def get(self, request):
+        core_name = "DDG"
+        select_q = "/select?q="
+        localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
+        facet_search = "&facet.field=hashtags&facet.field=lang&facet.field=poi_name&facet.field=poi_country&" \
+                       "facet.field=sentiment&facet.field=source&facet.sort=count&facet.limit=10&facet=on&facet.mincount=1"
+
+
+        query = request.GET.get('poi_name', None)
+        inurl = localhost + 'poi_name:' + query + facet_search + '&rows=20'
+        data = urllib.request.urlopen(inurl)
+        res = json.load(data)
+        response = res['response']
+        facet = res['facet_counts']
+        results = plot_data(response, {}, facet)
+
+        return Response(results)
+
+class FetchUserNewsView(APIView):
+    def get(self, request):
+        return Response([])
         core_name = "NewsArticles"
         select_q = "/select?q="
         localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q

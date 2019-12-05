@@ -17,8 +17,8 @@ class App extends React.Component {
 					<Route exact path='/search' component={SearchResults} />
 					<Route exact path='/search/p/:currentpage?' component={SearchResults} />
 					<Route exact path='/analysis' component={Analytics} />
-					<Route exact path='/tweet/:tweetid?' component={TweetComponent} />
-					<Route exact path='/poi' component={POIComponent} />
+					<Route exact path='/tweet/:tweetid' component={TweetComponent} />
+					<Route exact path='/poi/:poiname' component={POIComponent} />
 				</Switch>
 			</div>
 		</div>
