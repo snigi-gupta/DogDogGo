@@ -73,6 +73,11 @@ def plot_data(response, highlighting, facet):
         tweet_hash['hl_text'] = hl_text
         tweet_hash['sentiment'] = doc['sentiment'][0]
         tweet_hash['user_name'] = doc['user_name'][0]
+        tweet_hash['user_screen_name'] = doc['user_screen_name'][0]
+        tweet_hash['user_description'] = doc['user_description'][0]
+        tweet_hash['user_location'] = doc['user_location'][0]
+        tweet_hash['place_city'] = doc['place_city'][0]
+        tweet_hash['place_country'] = doc['place_country'][0]
         tweet_hash['verified'] = doc['verified'][0]
         tweet_hash['poi_name'] = doc['poi_name'][0]
         tweet_hash['created_at'] = doc['created_at'][0]

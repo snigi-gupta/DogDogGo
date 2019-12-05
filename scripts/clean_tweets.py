@@ -6,7 +6,7 @@ import re
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import pdb
 
-mypath = "D:/UB CSE/IR/Project 4/Crawled_Tweets/Data7"
+mypath = "D:/UB CSE/IR/Project 4/Crawled_Tweets/Data8"
 
 
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
@@ -83,17 +83,21 @@ for file in onlyfiles:
             t['poi_country'] = "VaticanCity"
 
         if d.get('lang') not in languages:
-            t['lang'] = "others"
+            t['lang'] = "Others"
 
         # language detection
         if d.get('lang') == "en":
             t.update({"text_en": processed_text})
+            t['lang'] = "English"
         elif d.get('lang') == "hi":
             t.update({"text_hi": processed_text})
+            t['lang'] = "Hindi"
         elif d.get('lang') == "pt":
             t.update({"text_pt": processed_text})
+            t['lang'] = "Portuguese"
         elif d.get('lang') == "es":
             t.update({"text_es": processed_text})
+            t['lang'] = "Spanish"
         else:
             if d.get('poi_country') == 'India':
                 t.update({"text_hi": processed_text})
