@@ -373,3 +373,10 @@ class FetchNewsView(APIView):
         core_name = "NewsArticles"
         select_q = "/select?q="
         localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
+        query = request.GET.get('id', None)
+        inurl = localhost + 'tweet_id:' + query
+
+        data = urllib.request.urlopen(inurl)
+        res = json.load(data)
+        response = res['response'].get('docs', None)
+
