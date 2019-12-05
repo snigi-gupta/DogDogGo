@@ -38,8 +38,11 @@ def sentiment_analysis(tweet):
 
 
 for file in onlyfiles:
-    if "replies" in file:
-        continue
+
+    # to process only reply files
+    # if "replies" not in file:
+    #     continue
+
     # print(file)
     file_path = mypath + "/" + file
     with open(file_path) as f:
@@ -207,7 +210,7 @@ for file in onlyfiles:
 
         new_data.append(t)
 
-    new_file_path = mypath + "/processed_data/" + file
+    new_file_path = mypath + "/processed_data_replies/" + file
     with open(new_file_path, "w") as f:
         json.dump(new_data, f)
     print(file + " Done!")
