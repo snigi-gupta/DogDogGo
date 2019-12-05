@@ -392,7 +392,7 @@ class FetchNewsView(APIView):
             tweet_hash['published_date'] = doc.get('published_date')[0]
             tweet_hash['content'] = doc.get('content')[0]
             tweets.append(tweet_hash)
-        
+
         return Response(tweet_hash)
 
 class FetchUserNewsView(APIView):
@@ -405,20 +405,21 @@ class FetchUserNewsView(APIView):
 
         data = urllib.request.urlopen(inurl)
         res = json.load(data)
-        doc = res['response'].get('docs', [None])[1]
-        news = []
-        num_articles = len(doc['articles.title'])
-        for i in range(num_articles):
-            t = dict()
-            t['title'] = doc['articles.title'][i]
-            t['source'] = doc['articles.source.name'][i]
-            t['author'] = doc['articles.author'][i]
-            t['description'] = doc['articles.description'][i]
-            t['url'] = doc['articles.url'][i]
-            t['url_to_image'] = doc['articles.urlToImage'][i]
-            t['published_data'] = doc['articles.publishedAt'][i]
-            t['content'] = doc['articles.content'][i]
-            t['id'] = doc['tweet_id']
-            t['poi_name'] = doc['related_to_poi_name']
-            news.append(t)
-        return Response(all_news)
+        response = res['response']
+        docs = response.get('docs', [None])
+        total = response.get('numFound')
+        tweets = []
+        for doc in docs:
+            tweet_hash = dict()
+            tweet_hash['tweet_id'] = doc.get('tweet_id')[0]
+            tweet_hash['poi_name'] = doc.get('poi_name')
+            tweet_hash['author'] = doc.get('author')[0]
+            tweet_hash['title'] = doc.get('title')[0]
+            tweet_hash['description'] = doc.get('description')[0]
+            tweet_hash['url'] = doc.get('url')[0]
+            tweet_hash['url_to_image'] = doc.get('url_to_image')[0]
+            tweet_hash['published_date'] = doc.get('published_date')[0]
+            tweet_hash['content'] = doc.get('content')[0]
+            tweets.append(tweet_hash)
+
+        return Response(tweet_hash)
