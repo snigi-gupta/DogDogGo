@@ -58,6 +58,7 @@ def plot_data(response, highlighting, facet):
         tweet_hash['article_count'] = doc.get('article_count', 0)
         tweet_hash['profile_url_https'] = doc['user_profile_image_url_https'][0]
         tweet_hash['profile_url'] = doc['user_profile_image_url'][0]
+        tweet_hash['in_reply_to_status_id'] = doc['in_reply_to_status_id'][0]
 
 
 
