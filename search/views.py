@@ -326,7 +326,7 @@ class SearchQueryView(APIView):
                 temp_array.append("source:" + query_source)
                 temp_flag = True
             if language:
-                temp_array.append("language:" + query_language)
+                temp_array.append("lang:" + query_language)
                 temp_flag = True
 
             if temp_flag:
