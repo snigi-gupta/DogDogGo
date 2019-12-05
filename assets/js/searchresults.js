@@ -16,7 +16,8 @@ import {
 	faChevronLeft,
 	faChevronRight,
 	faNewspaper,
-	faRetweet
+	faRetweet,
+	faSearch
 } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment'
 import ExternalImage from 'react-external-image'
@@ -141,6 +142,14 @@ class SearchResults extends React.Component {
 				console.log(res)
 			})
 	}
+	repliesAndArticles(tweet) {
+		if (tweet.verified) {
+			return <React.Fragment>
+			</React.Fragment>
+		} else {
+			return 
+		}
+	}
 	searchElements() {
 		const { tweets } = this.state
 		return tweets.map((tweet, i) => {
@@ -182,6 +191,7 @@ class SearchResults extends React.Component {
 								{' '}
 								<span>{tweet.retweet_count}</span>
 							</div>
+							{/* this.repliesAndArticles() */}
 							<div className="col-md-3">
 								<FontAwesomeIcon icon={faReply}/>
 								{' '}
@@ -387,10 +397,11 @@ class SearchResults extends React.Component {
 					<input
 						name="search"
 						type="text"
-						className="form-control"
+						className="form-control search-results-box"
 						value={search}
 						onChange={this.handleSearchChange}
 					/>
+					<FontAwesomeIcon icon={faSearch} className="search-results-icon"/>
 				</div>
 			</form>
 		</div>
