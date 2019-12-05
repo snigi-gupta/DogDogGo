@@ -79,6 +79,9 @@ def plot_data(response, highlighting, facet):
         tweet_hash['retweet_count'] = doc['retweet_count'][0]
         # tweet_hash['reply_count'] = doc['reply_count'][0]
         tweet_hash['article_count'] = random.randint(0, 10)
+        tweet_hash['profile_url_https'] = doc['user_profile_image_url_https'][0]
+        tweet_hash['profile_url'] = doc['user_profile_image_url'][0]
+
 
         # sentiment_count[doc['sentiment'][0]] += 1
         # if 'hashtags' in doc:
@@ -320,8 +323,9 @@ class SearchQueryView(APIView):
                 temp_flag = True
 
             if temp_flag:
-                inurl = localhost + "processed_text:" + query + and_seperator + and_seperator.join(temp_array) + \
-                        highlight_search + facet_search + limit + fl_score
+                inurl = localhost + "(" + "processed_text:" + query + or_seperator + "text_en:" + query_en + or_seperator + \
+                        "text_hi:" + query_hi + "text_pt:" + query_pt + or_seperator + "text_es:" + query_es + ")" + \
+                        and_seperator + and_seperator.join(temp_array) + highlight_search + facet_search + limit + fl_score
 
             elif not inurl:
                 inurl = localhost + "processed_text:" + query + or_seperator + "text_en:" + query_en + or_seperator + \
