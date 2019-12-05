@@ -27,6 +27,8 @@ import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable';
 import Plot from 'react-plotly.js'
 import qs from 'qs'
+import POITweetCard from './poitweetcard'
+import ReplyTweetCard from './replytweetcard'
 
 const sentimentEmoticonHash = {
 	'positive': {icon: faSmileBeam, classname: 'sentiment-happy', label: 'Positive'},
@@ -66,6 +68,7 @@ class SearchResults extends React.Component {
 		this.handleFilterSubmit = this.handleFilterSubmit.bind(this)
 		this.handleFilterChange = this.handleFilterChange.bind(this)
 		this.clearFilters = this.clearFilters.bind(this)
+		this.mlt = this.mlt.bind(this)
 		this.test = this.test.bind(this)
 	}
 	componentDidMount() {
@@ -143,169 +146,14 @@ class SearchResults extends React.Component {
 				console.log(res)
 			})
 	}
-	poiQuickLinks(tweet) {
-		return <React.Fragment>
-		</React.Fragment>
-	}
-	replyQuickLinks(tweet) {
-		return <React.Fragment>
-		</React.Fragment>
-	}
-	poiTweetCard(tweet) {
-		return <div key={`${tweet.id}-${i}`} className="tweet-card">
-			<div className="row">
-				<div className="col-md-1">
-					<ExternalImage
-						src={tweet.profile_url_https}
-						fallbackImages={['/static/img/twitter_placeholder.jpg']}
-						className="img-46 img-rounded"
-					/>
-				</div>
-				<div className="col-md-10 tweet-card-text">
-					<div className="row">
-						<Link to={`/poi/${tweet.poi_name}`}>
-							<span className="text-bold">{tweet.user_name}</span>
-						</Link>
-						{'  '}
-						{ tweet.verified && 
-							<FontAwesomeIcon icon={faCheckCircle} className="verified-circle"/>
-						}{'  '}
-						<span className="text-grey">@{tweet.poi_name}</span>
-						<span className="text-grey">
-							{' | '}
-							{moment(tweet.created_at).fromNow()}
-						</span>
-					</div>
-					<div className="row" dangerouslySetInnerHTML={{__html: tweet.hl_text}}>
-					</div>
-					{ tweet.verified ?
-						this.poiQuickLinks()
-						:
-						this.replyQuickLinks()
-					}
-					<div className="row tweet-card-quicklinks">
-						<div className="col-md-3">
-							<FontAwesomeIcon
-								icon={sentimentEmoticonHash[sentiment]['icon']}
-								className={sentimentEmoticonHash[sentiment]['classname']}
-							/>
-							{' '}
-							<span>{sentimentEmoticonHash[sentiment]['label']}</span>
-						</div>
-						<div className="col-md-3">
-							<FontAwesomeIcon icon={faRetweet}/>
-							{' '}
-							<span>{tweet.retweet_count}</span>
-						</div>
-						<div className="col-md-3">
-							<FontAwesomeIcon icon={faReply}/>
-							{' '}
-							{tweet['retweet_count']}
-						</div>
-						<div className="col-md-3">
-							<FontAwesomeIcon icon={faNewspaper}/>
-							{' '}
-							{tweet.article_count}
-						</div>
-					</div>
-					<div className="row tweet-card-more-details">
-						<div className="col-md-6">
-							Detailed Analysis
-							{'   '}
-							<FontAwesomeIcon icon={faChevronRight}/>
-						</div>
-						<div className="col-md-6">
-							<a onClick={this.mlt.bind(this, tweet.id)}>
-								More Like This
-								{'   '}
-								<FontAwesomeIcon icon={faChevronRight}/>
-							</a>
-						</div>
-					</div>
-				</div>
-				<div className="col-md-1">
-				</div>
-			</div>
-		</div>
-	}
-	searchElements() {
+	searchResults() {
 		const { tweets } = this.state
 		return tweets.map((tweet, i) => {
-			let sentiment = String(tweet.sentiment)
-			return <div key={`${tweet.id}-${i}`} className="tweet-card">
-				<div className="row">
-					<div className="col-md-1">
-						<ExternalImage
-							src={tweet.profile_url_https}
-							fallbackImages={['/static/img/twitter_placeholder.jpg']}
-							className="img-46 img-rounded"
-						/>
-					</div>
-					<div className="col-md-10 tweet-card-text">
-						<div className="row">
-							<Link to={`/poi/${tweet.poi_name}/analysis`}>
-								<span className="text-bold">{tweet.user_name}</span>{'  '}
-							</Link>
-							{ tweet.verified && 
-								<FontAwesomeIcon icon={faCheckCircle} className="verified-circle"/>
-							}{'  '}
-							<span className="text-grey">@{tweet.user_screen_name}</span>
-							<span className="text-grey">
-								{' | '}
-								{moment(tweet.created_at).fromNow()}
-							</span>
-						</div>
-						<div className="row" dangerouslySetInnerHTML={{__html: tweet.hl_text}}>
-						</div>
-						{ tweet.verified ?
-							this.poiQuickLinks()
-							:
-							this.replyQuickLinks()
-						}
-						<div className="row tweet-card-quicklinks">
-							<div className="col-md-3">
-								<FontAwesomeIcon
-									icon={sentimentEmoticonHash[sentiment]['icon']}
-									className={sentimentEmoticonHash[sentiment]['classname']}
-								/>
-								{' '}
-								<span>{sentimentEmoticonHash[sentiment]['label']}</span>
-							</div>
-							<div className="col-md-3">
-								<FontAwesomeIcon icon={faRetweet}/>
-								{' '}
-								<span>{tweet.retweet_count}</span>
-							</div>
-							<div className="col-md-3">
-								<FontAwesomeIcon icon={faReply}/>
-								{' '}
-								{tweet['retweet_count']}
-							</div>
-							<div className="col-md-3">
-								<FontAwesomeIcon icon={faNewspaper}/>
-								{' '}
-								{tweet.article_count}
-							</div>
-						</div>
-						<div className="row tweet-card-more-details">
-							<div className="col-md-6">
-								Detailed Analysis
-								{'   '}
-								<FontAwesomeIcon icon={faChevronRight}/>
-							</div>
-							<div className="col-md-6">
-								<a onClick={this.mlt.bind(this, tweet.id)}>
-									More Like This
-									{'   '}
-									<FontAwesomeIcon icon={faChevronRight}/>
-								</a>
-							</div>
-						</div>
-					</div>
-					<div className="col-md-1">
-					</div>
-				</div>
-			</div>
+			if (tweet.verified) {
+				return <POITweetCard key={tweet.id} tweet={tweet} mlt={this.mlt}/>
+			} else {
+				return <ReplyTweetCard key={tweet.id} tweet={tweet} mlt={this.mlt}/>
+			}
 		})
 	}
 	mlt(tweet_id) {
@@ -508,8 +356,6 @@ class SearchResults extends React.Component {
 	handleSearchChange(event) {
 		this.setState({search: event.target.value})
 	}
-	test(event) {
-	}
 	analytics() {
 		const { analysis } = this.state
 		let plots = []
@@ -523,7 +369,6 @@ class SearchResults extends React.Component {
 			},
 			]}
 			layout={{width: 480, height: 360, title: 'Location Distribution'}}
-			onClick={this.test}
 		/>)
 		plots.push(<Plot
 			key='sentiment'
@@ -536,7 +381,6 @@ class SearchResults extends React.Component {
 			},
 			]}
 			layout={{width: 480, height: 360, title: 'Sentiment Analysis'}}
-			onClick={this.test}
 		/>)
 		plots.push(<Plot
 			key='pois'
@@ -549,7 +393,6 @@ class SearchResults extends React.Component {
 			},
 			]}
 			layout={{width: 480, height: 360, title: 'Person Of Interests Distribution'}}
-			onClick={this.test}
 		/>)
 		plots.push(<Plot
 			key='source'
@@ -561,7 +404,6 @@ class SearchResults extends React.Component {
 			},
 			]}
 			layout={{width: 480, height: 360, title: 'Distribution of Devices Used'}}
-			onClick={this.test}
 		/>)
 		return plots
 	}
@@ -585,7 +427,7 @@ class SearchResults extends React.Component {
 							Fetched {total} results in {Math.round(timetaken, 1)} ms.
 						</div>
 						<div className="row">
-							{ this.searchElements() }
+							{ this.searchResults() }
 						</div>
 						<div className="paginate bv-pagination">
 							<ReactPaginate
