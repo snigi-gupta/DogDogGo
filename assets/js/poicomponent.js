@@ -69,9 +69,8 @@ class POIComponent extends React.Component {
 					info_card: info,
 					tweets: tweets,
 					analysis: analysis,
-					loading: false
 				})
-				//this.fetchUserArticles()
+				this.fetchUserArticles()
 			})
 			.catch(res => {
 				console.log(res)
@@ -148,11 +147,22 @@ class POIComponent extends React.Component {
 			</ul>
 		</div>
 	}
+	content() {
+		const { match } = this.props
+		switch(match.param.type) {
+			case 'analysis':
+				return <POIAnalysis analysis={analysis} />
+			case 'replies':
+				return <POITweets tweets={tweets} />
+			case 'articles':
+				return <POIArticles articles={articles} />
+		}
+	}
 	render() {
 		// Tweet Card
 		// Analysis
 		// Replies and Articles
-		const { loading, analysis } = this.state
+		const { loading, analysis, articles, tweets } = this.state
 		const { match } = this.props
 		if (loading) {
 			return <div>
@@ -164,7 +174,8 @@ class POIComponent extends React.Component {
 				{ this.userInfoCard() }
 				{ this.header() }
 			</div>
-			{ match.params.type === 'analysis' ? <POIAnalysis analysis={analysis}/> : <POITweetsReplies /> }
+			{ this.content() }
+			{ match.params.type === 'analysis' ? <POIAnalysis analysis={analysis}/> : <POITweetsReplies tweets={tweets} articles={articles}/> }
 		</div>
 	}
 }

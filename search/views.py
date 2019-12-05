@@ -393,7 +393,7 @@ class FetchNewsView(APIView):
             tweet_hash['content'] = doc.get('content')[0]
             tweets.append(tweet_hash)
 
-        return Response(tweet_hash)
+        return Response(tweets)
 
 class FetchUserNewsView(APIView):
     def get(self, request):
@@ -422,4 +422,4 @@ class FetchUserNewsView(APIView):
             tweet_hash['content'] = doc.get('content')[0]
             tweets.append(tweet_hash)
 
-        return Response(tweet_hash)
+        return Response(tweets)
