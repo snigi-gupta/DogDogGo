@@ -4,6 +4,8 @@ import * as actionCreators from './actioncreators'
 import { bindActionCreators } from 'redux'
 import { actions } from './actioncreators'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import POIAnalysis from './poi/poianalysis'
+import POITweetsReplies from './poi/poitweetsreplies'
 import {
 	faUser,
 	faCheckCircle,
@@ -17,9 +19,10 @@ import {
 	faChevronRight,
 	faNewspaper,
 	faRetweet,
+	faMapMarkerAlt,
 	faSearch
 } from '@fortawesome/free-solid-svg-icons'
-import { Link } from 'react-router-dom'
+import { Link, Switch, Route } from 'react-router-dom'
 import moment from 'moment'
 import ExternalImage from 'react-external-image'
 
@@ -53,20 +56,22 @@ class POIComponent extends React.Component {
 				let tweet = tweets[0]
 				let info = {
 					poi_name: tweet.poi_name,
+					verified: tweet.verified,
 					profile_url_https: tweet.profile_url_https,
 					user_description: tweet.user_description,
 					user_location: tweet.user_location,
 					user_name: tweet.user_name,
 					user_screen_name: tweet.user_screen_name,
-					tweets_count: analysis.poi[poiname]
+					tweets_count: analysis.poi[poiname.toLowerCase()]
 				}
 				// Will incur double renders. Avoid
 				this.setState({
 					info_card: info,
 					tweets: tweets,
-					analysis: analysis
+					analysis: analysis,
+					loading: false
 				})
-				this.fetchUserArticles()
+				//this.fetchUserArticles()
 			})
 			.catch(res => {
 				console.log(res)
@@ -97,32 +102,69 @@ class POIComponent extends React.Component {
 					</div>
 					<div className="col-md-10 tweet-card-text">
 						<div className="row">
-							<Link to={`/poi/${info_card.poi_name}`}>
+							<a href={`https://twitter.com/${info_card.user_screen_name}`}>
 								<span className="text-bold">{info_card.user_name}</span>{'  '}
-							</Link>
+							</a>
 							{ info_card.verified && 
 							<FontAwesomeIcon icon={faCheckCircle} className="verified-circle"/>
 							}{'  '}
 							<span className="text-grey">@{info_card.user_screen_name}</span>
 						</div>
+						<div className="row">
+							{ info_card.user_description }
+						</div>
+						<div className="row">
+							<FontAwesomeIcon icon={faMapMarkerAlt} className="verified-circle"/>
+							{'  '}
+							{ info_card.user_location }
+						</div>
+						<div className="row">
+							{ info_card.tweets_count } Tweets
+						</div>
 					</div>
 				</div>
 			</div>
+	}
+	header() {
+		const { match, location } = this.props
+		return <div>
+			<ul className="bv-tab-list-style-2">
+				<li>
+					<Link
+						to={`/poi/${match.params.poiname}/analysis`}
+						className={match.params.type === 'analysis' ? 'active' : ''}
+					>
+						Analysis
+					</Link>
+				</li>
+				<li>
+					<Link
+						to={`/poi/${match.params.poiname}/tweetsarticles`}
+						className={match.params.type === 'tweetsarticles' ? 'active' : ''}
+					>
+						Tweets and Articles
+					</Link>
+				</li>
+			</ul>
+		</div>
 	}
 	render() {
 		// Tweet Card
 		// Analysis
 		// Replies and Articles
-		const { loading } = this.state
+		const { loading, analysis } = this.state
+		const { match } = this.props
 		if (loading) {
 			return <div>
 				LOADING
 			</div>
 		}
 		return <div>
-			<div className>
+			<div className="user-info-card">
 				{ this.userInfoCard() }
+				{ this.header() }
 			</div>
+			{ match.params.type === 'analysis' ? <POIAnalysis analysis={analysis}/> : <POITweetsReplies /> }
 		</div>
 	}
 }

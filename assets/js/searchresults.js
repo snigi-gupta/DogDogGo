@@ -243,7 +243,7 @@ class SearchResults extends React.Component {
 					</div>
 					<div className="col-md-10 tweet-card-text">
 						<div className="row">
-							<Link to={`/poi/${tweet.poi_name}`}>
+							<Link to={`/poi/${tweet.poi_name}/analysis`}>
 								<span className="text-bold">{tweet.user_name}</span>{'  '}
 							</Link>
 							{ tweet.verified && 
