@@ -398,5 +398,24 @@ class FetchUserNewsView(APIView):
 
         data = urllib.request.urlopen(inurl)
         res = json.load(data)
-        response = res['response'].get('docs', None)
+        doc = res['response'].get('docs', [None])[0]
+
+        num_articles = len(doc['articles.title'])
+        news = []
+        for i in range(num_articles):
+            t = dict()
+            t['title'] = doc['articles.title'][i]
+            t['source'] = doc['articles.source.name'][i]
+            t['author'] = doc['articles.author'][i]
+            t['description'] = doc['articles.description'][i]
+            t['url'] = doc['articles.url'][i]
+            t['url_to_image'] = doc['articles.urlToImage'][i]
+            t['published_data'] = doc['articles.publishedAt'][i]
+            t['content'] = doc['articles.content'][i]
+            t['id'] = doc['tweet_id']
+            t['poi_name'] = doc['related_to_poi_name']
+            news.append(t)
+
+        return Response(news)
+
 
