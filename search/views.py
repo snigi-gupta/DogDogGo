@@ -80,10 +80,11 @@ def plot_data(response, highlighting, facet):
         tweet_hash['poi_name'] = doc['poi_name'][0]
         tweet_hash['created_at'] = doc['created_at'][0]
         tweet_hash['retweet_count'] = doc['retweet_count'][0]
-        tweet_hash['reply_count'] = doc.get(['reply_count'], [None])[0]
-        tweet_hash['article_count'] = doc.get(['article_count'], [None])[0]
+        tweet_hash['reply_count'] = doc.get('reply_count', 0)
+        tweet_hash['article_count'] = doc.get('article_count', 0)
         tweet_hash['profile_url_https'] = doc['user_profile_image_url_https'][0]
         tweet_hash['profile_url'] = doc['user_profile_image_url'][0]
+
 
 
         # sentiment_count[doc['sentiment'][0]] += 1
