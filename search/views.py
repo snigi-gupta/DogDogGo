@@ -80,8 +80,8 @@ def plot_data(response, highlighting, facet):
         tweet_hash['poi_name'] = doc['poi_name'][0]
         tweet_hash['created_at'] = doc['created_at'][0]
         tweet_hash['retweet_count'] = doc['retweet_count'][0]
-        # tweet_hash['reply_count'] = doc['reply_count'][0]
-        tweet_hash['article_count'] = random.randint(0, 10)
+        tweet_hash['reply_count'] = doc.get(['reply_count'], [None])[0]
+        tweet_hash['article_count'] = doc.get(['article_count'], [None])[0]
         tweet_hash['profile_url_https'] = doc['user_profile_image_url_https'][0]
         tweet_hash['profile_url'] = doc['user_profile_image_url'][0]
 
@@ -253,6 +253,7 @@ class SearchQueryView(APIView):
         poi = []
         sentiment = []
         source = []
+        language = []
         if filters:
             filters = json.loads(filters)
             hashtags = filters.get('hashtags', None)
@@ -260,7 +261,7 @@ class SearchQueryView(APIView):
             poi = filters.get('poi', None)
             sentiment = filters.get('sentiment', None)
             source = filters.get('source', None)
-            language = filters.get('language',None)
+            language = filters.get('language', None)
 
         query_hashtag = self.process_filter(hashtags) if hashtags else None
         query_location = self.process_filter(location) if location else None
@@ -416,5 +417,3 @@ class FetchUserNewsView(APIView):
             news.append(t)
 
         return Response(news)
-
-
