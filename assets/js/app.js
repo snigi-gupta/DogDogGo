@@ -1,5 +1,9 @@
 import React from 'react'
-import { Switch, Route } from 'react-router-dom' 
+import { connect } from 'react-redux'
+import * as actionCreators from './actioncreators'
+import { bindActionCreators } from 'redux'
+import { actions } from './actioncreators'
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom' 
 import Search from './search'
 import SearchResults from './searchresults'
 import Analytics from './analytics'
@@ -9,6 +13,8 @@ import POIComponent from './poicomponent'
 
 class App extends React.Component {
 	render() {
+		const { match } = this.props
+		console.log(match)
 		return <div>
 			<Header />
 			<div style={{marginTop: "8rem"}}>
@@ -18,11 +24,23 @@ class App extends React.Component {
 					<Route exact path='/search/p/:currentpage?' component={SearchResults} />
 					<Route exact path='/analysis' component={Analytics} />
 					<Route exact path='/tweet/:tweetid' component={TweetComponent} />
-					<Route exact path='/poi/:poiname' component={POIComponent} />
+					<Route exact path='/poi/:poiname?/:type?' component={POIComponent} />
 				</Switch>
 			</div>
 		</div>
 	}
 }
 
-export default App
+const mapStateToProps = (state) => {
+	return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {actions: bindActionCreators(actionCreators, dispatch)}
+}
+
+const mergeProps = (stateProps, dispatchProps, ownProps) => {
+	return Object.assign({}, ownProps, stateProps, dispatchProps)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(withRouter(App))
