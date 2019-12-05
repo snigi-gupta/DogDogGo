@@ -218,3 +218,7 @@
 	display: inline-block;
 	margin: 0 1rem;
 }
+.nothing-found {
+	margin-top: 5rem;
+	text-align: center;
+}

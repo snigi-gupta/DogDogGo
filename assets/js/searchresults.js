@@ -69,7 +69,6 @@ class SearchResults extends React.Component {
 		this.handleFilterChange = this.handleFilterChange.bind(this)
 		this.clearFilters = this.clearFilters.bind(this)
 		this.mlt = this.mlt.bind(this)
-		this.test = this.test.bind(this)
 	}
 	componentDidMount() {
 		this.fetchTweets()

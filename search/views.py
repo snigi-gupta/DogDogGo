@@ -385,7 +385,7 @@ class FetchNewsView(APIView):
             tweet_hash = dict()
             tweet_hash['tweet_id'] = doc.get('tweet_id')[0]
             tweet_hash['poi_name'] = doc.get('poi_name')
-            tweet_hash['author'] = doc.get('author')[0]
+            tweet_hash['author'] = doc.get('author', [None])[0]
             tweet_hash['title'] = doc.get('title')[0]
             tweet_hash['description'] = doc.get('description')[0]
             tweet_hash['url'] = doc.get('url')[0]
@@ -402,8 +402,9 @@ class FetchUserNewsView(APIView):
         select_q = "/select?q="
         localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
         query = request.GET.get('poi_name', None)
-        inurl = localhost + 'related_to_poi_name:' + query
+        inurl = localhost + 'poi_name:' + query
 
+        print(inurl)
         data = urllib.request.urlopen(inurl)
         res = json.load(data)
         response = res['response']
@@ -414,13 +415,13 @@ class FetchUserNewsView(APIView):
             tweet_hash = dict()
             tweet_hash['tweet_id'] = doc.get('tweet_id')[0]
             tweet_hash['poi_name'] = doc.get('poi_name')
-            tweet_hash['author'] = doc.get('author')[0]
-            tweet_hash['title'] = doc.get('title')[0]
-            tweet_hash['description'] = doc.get('description')[0]
-            tweet_hash['url'] = doc.get('url')[0]
-            tweet_hash['url_to_image'] = doc.get('url_to_image')[0]
-            tweet_hash['published_date'] = doc.get('published_date')[0]
-            tweet_hash['content'] = doc.get('content')[0]
+            tweet_hash['author'] = doc.get('author', [None])[0]
+            tweet_hash['title'] = doc.get('title', [None])[0]
+            tweet_hash['description'] = doc.get('description', [None])[0]
+            tweet_hash['url'] = doc.get('url', [None])[0]
+            tweet_hash['url_to_image'] = doc.get('url_to_image', [None])[0]
+            tweet_hash['published_date'] = doc.get('published_date', [None])[0]
+            tweet_hash['content'] = doc.get('content', [None])[0]
             tweets.append(tweet_hash)
 
         return Response(tweets)

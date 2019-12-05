@@ -15,7 +15,7 @@ import {
 	faRetweet,
 	faSearch
 } from '@fortawesome/free-solid-svg-icons'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import moment from 'moment'
 import ExternalImage from 'react-external-image'
 
@@ -108,4 +108,4 @@ class POITweetCard extends React.PureComponent {
 	}
 }
 
-export default POITweetCard
+export default withRouter(POITweetCard)
