@@ -13,6 +13,8 @@ import json
 import os, requests, uuid
 from collections import defaultdict
 import pdb
+from datetime import datetime
+import pandas as pd
 
 # Create your views here.
 # def index(request):
@@ -33,6 +35,7 @@ def plot_data(response, highlighting, facet):
     source_count = defaultdict(int)
     hashtag_count = defaultdict(int)
     tweets = []
+    time_series = []
     for doc in docs:
         tweet_hash = {}
         doc_id = doc['id']
@@ -61,7 +64,8 @@ def plot_data(response, highlighting, facet):
         tweet_hash['profile_url'] = doc['user_profile_image_url'][0]
         tweet_hash['in_reply_to_status_id'] = doc['in_reply_to_status_id'][0]
 
-
+        tweet_hash['created_at'] = datetime.strptime(tweet_hash['created_at'][:tweet_hash['created_at'].index('T')], '%Y-%m-%d')
+        time_series.append([tweet_hash['created_at'], tweet_hash['poi_name']])
 
         # sentiment_count[doc['sentiment'][0]] += 1
         # if 'hashtags' in doc:
@@ -74,6 +78,10 @@ def plot_data(response, highlighting, facet):
         # source_count[doc['source'][0]] +=1
 
         tweets.append(tweet_hash)
+
+    df = pd.DataFrame(time_series, columns=['date', 'name'])
+    df = df.groupby(['date', 'name']).size().reset_index(name='count')
+    time_series = df.values.tolist()
 
     sentiment = {}
     poi = {}
@@ -98,7 +106,8 @@ def plot_data(response, highlighting, facet):
             'location': location,
             'source': source,
             'hashtags': hashtags,
-            'language': language
+            'language': language,
+            'time_series': time_series
         },
         'total': total
     }
