@@ -389,7 +389,6 @@ class FetchUserTweetsView(APIView):
 
 class FetchUserNewsView(APIView):
     def get(self, request):
-        return Response([])
         core_name = "NewsArticles"
         select_q = "/select?q="
         localhost = "http://18.191.146.199:8983/solr/" + core_name + select_q
