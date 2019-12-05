@@ -394,6 +394,7 @@ class FetchNewsView(APIView):
             tweet_hash = dict()
             tweet_hash['tweet_id'] = doc.get('tweet_id')[0]
             tweet_hash['poi_name'] = doc.get('poi_name')
+            tweet_hash['source'] = doc.get('source', [None])[0]
             tweet_hash['author'] = doc.get('author', [None])[0]
             tweet_hash['title'] = doc.get('title')[0]
             tweet_hash['description'] = doc.get('description')[0]
@@ -424,6 +425,7 @@ class FetchUserNewsView(APIView):
             tweet_hash = dict()
             tweet_hash['tweet_id'] = doc.get('tweet_id')[0]
             tweet_hash['poi_name'] = doc.get('poi_name')
+            tweet_hash['source'] = doc.get('source', [None])[0]
             tweet_hash['author'] = doc.get('author', [None])[0]
             tweet_hash['title'] = doc.get('title', [None])[0]
             tweet_hash['description'] = doc.get('description', [None])[0]
