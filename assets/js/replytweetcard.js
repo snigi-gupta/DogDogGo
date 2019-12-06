@@ -53,15 +53,15 @@ class ReplyTweetCard extends React.PureComponent {
 					</div>
 					<div className="row" dangerouslySetInnerHTML={{__html: tweet.hl_text}} />
 					<div className="row tweet-card-quicklinks">
-						<div className="col-md-4">
+						<div className="col-md-2">
 							<FontAwesomeIcon
 								icon={sentimentEmoticonHash[sentiment]['icon']}
 								className={sentimentEmoticonHash[sentiment]['classname']}
 							/>
 						</div>
-						<div className="col-md-4">
-							<Link to={`/tweet/${tweet.in_reply_to_status_id}/analysis`}>
-								View Tweet from POI
+						<div className="col-md-6">
+							<Link to={`/poi/${tweet.poi_name}/analysis`}>
+								View Tweets from POI
 							</Link>
 						</div>
 						<div className="col-md-4">

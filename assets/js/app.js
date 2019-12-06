@@ -14,7 +14,6 @@ import POIComponent from './poicomponent'
 class App extends React.Component {
 	render() {
 		const { match } = this.props
-		console.log(match)
 		return <div>
 			<Header />
 			<div style={{marginTop: "8rem"}}>
@@ -23,7 +22,7 @@ class App extends React.Component {
 					<Route exact path='/search' component={SearchResults} />
 					<Route exact path='/search/p/:currentpage?' component={SearchResults} />
 					<Route exact path='/analysis' component={Analytics} />
-					<Route exact path='/tweet/:tweetid' component={TweetComponent} />
+					<Route exact path='/tweet/:tweetid?/:type?' component={TweetComponent} />
 					<Route exact path='/poi/:poiname?/:type?' component={POIComponent} />
 				</Switch>
 			</div>

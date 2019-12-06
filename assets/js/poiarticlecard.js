@@ -33,8 +33,7 @@ class POIArticleCard extends React.PureComponent {
 				<br/>
 				<br/>
 				<a href={article.url} target="_blank">View Original Article</a>
-				{' | '}
-				<Link to={`/poi/${article.tweet_id}/analysis`}>View Related Tweet</Link>
+				{/*<Link to={`/tweet/${article.tweet_id}/analysis`}>View Related Tweet</Link>*/}
 		</div>
 	}
 }

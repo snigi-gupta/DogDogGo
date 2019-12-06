@@ -3,7 +3,14 @@ import Plot from 'react-plotly.js'
 
 class POIAnalysis extends React.PureComponent {
 	render() {
-		const { analysis } = this.props
+		const { analysis, tweets, fallbackMessage } = this.props
+		if (tweets.length == 0) {
+			return <div className="nothing-found">
+				<img src='/static/img/no-articles.svg' />
+				<br />
+				<span style={{fontSize: '3rem'}}>{fallbackMessage}</span>
+			</div>
+		}
 		return <div className="text-center">
 			<div className="row">
 				<div className="row">
@@ -48,7 +55,7 @@ class POIAnalysis extends React.PureComponent {
 				</div>
 			</div>
 		</div>
-}
+	}
 }
 
 export default POIAnalysis

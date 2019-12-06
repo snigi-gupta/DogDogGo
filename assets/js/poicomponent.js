@@ -163,7 +163,7 @@ class POIComponent extends React.Component {
 		const { loading, analysis, articles, tweets, totalTweets } = this.state
 		switch(match.params.type) {
 			case 'analysis':
-				return <POIAnalysis analysis={analysis} />
+				return <POIAnalysis analysis={analysis} tweets={tweets} fallbackMessage='No Tweets found!'/>
 			case 'tweets':
 				return <POITweets tweets={tweets} total={totalTweets}/>
 			case 'articles':

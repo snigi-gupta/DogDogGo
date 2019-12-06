@@ -1,9 +1,9 @@
 import React from 'react'
-import POITweetCard from './poitweetcard'
+import ReplyTweetCard from './replytweetcard'
 import qs from 'qs'
 import { withRouter } from 'react-router-dom'
 
-class POITweets extends React.Component {
+class ReplyTweets extends React.Component {
 	constructor(props) {
 		super(props)
 		this.mlt = this.mlt.bind(this)
@@ -21,7 +21,7 @@ class POITweets extends React.Component {
 	populateTweets() {
 		const { tweets } = this.props
 		return tweets.slice(0, 10).map((tweet, i) => {
-			return <POITweetCard key={tweet.id} tweet={tweet} mlt={this.mlt} />
+			return <ReplyTweetCard key={tweet.id} tweet={tweet} mlt={this.mlt} />
 		})
 	}
 	moreTweets() {
@@ -49,4 +49,4 @@ class POITweets extends React.Component {
 	}
 }
 
-export default withRouter(POITweets)
+export default withRouter(ReplyTweets)

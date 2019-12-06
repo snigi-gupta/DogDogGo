@@ -347,6 +347,7 @@ class FetchRepliesView(APIView):
 
         query = request.GET.get('id', None)
         inurl = localhost + 'in_reply_to_status_id:' + query + facet_search + '&rows=20'
+        print(inurl)
         data = urllib.request.urlopen(inurl)
         res = json.load(data)
         response = res['response']
@@ -354,10 +355,30 @@ class FetchRepliesView(APIView):
         results = plot_data(response, {}, facet)
 
         original_tweet_url = localhost + 'id:' + query
-        data = urllib.request.urlopen(inurl)
+        print(original_tweet_url)
+        data = urllib.request.urlopen(original_tweet_url)
         res = json.load(data)
         doc = res['response'].get('docs', [None])[0]
-        results['original_tweet'] = doc
+        tweet_hash = {}
+        doc_id = doc['id']
+        hl_text = doc['full_text']
+        tweet_hash['id'] = doc['id']
+        tweet_hash['hl_text'] = hl_text
+        tweet_hash['sentiment'] = doc['sentiment'][0]
+        tweet_hash['user_name'] = doc['user_name'][0]
+        tweet_hash['user_screen_name'] = doc['user_screen_name'][0]
+        tweet_hash['user_description'] = doc.get('user_description', [None])[0]
+        tweet_hash['user_location'] = doc.get('user_location', [None])[0]
+        tweet_hash['verified'] = doc['verified'][0]
+        tweet_hash['poi_name'] = doc['poi_name'][0]
+        tweet_hash['created_at'] = doc['created_at'][0]
+        tweet_hash['retweet_count'] = doc['retweet_count'][0]
+        tweet_hash['reply_count'] = doc.get('reply_count', 0)
+        tweet_hash['article_count'] = doc.get('article_count', 0)
+        tweet_hash['profile_url_https'] = doc['user_profile_image_url_https'][0]
+        tweet_hash['profile_url'] = doc['user_profile_image_url'][0]
+        tweet_hash['in_reply_to_status_id'] = doc.get('in_reply_to_status_id', [None])[0]
+        results['original_tweet'] = tweet_hash
         return Response(results)
 
 class FetchUserTweetsView(APIView):
@@ -404,7 +425,7 @@ class FetchNewsView(APIView):
             tweet_hash['title'] = doc.get('title')[0]
             tweet_hash['description'] = doc.get('description')[0]
             tweet_hash['url'] = doc.get('url')[0]
-            tweet_hash['url_to_image'] = doc.get('url_to_image')[0]
+            tweet_hash['url_to_image'] = doc.get('url_to_image', ['None'])[0]
             tweet_hash['published_date'] = doc.get('published_date')[0]
             tweet_hash['content'] = doc.get('content')[0]
             tweets.append(tweet_hash)
