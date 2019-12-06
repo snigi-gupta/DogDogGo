@@ -161,7 +161,6 @@ class POIComponent extends React.Component {
 	content() {
 		const { match } = this.props
 		const { loading, analysis, articles, tweets, totalTweets } = this.state
-		console.log(tweets)
 		switch(match.params.type) {
 			case 'analysis':
 				return <POIAnalysis analysis={analysis} />

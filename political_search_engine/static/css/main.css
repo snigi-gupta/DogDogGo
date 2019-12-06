@@ -222,3 +222,13 @@
 	margin-top: 5rem;
 	text-align: center;
 }
+.article-heading {
+	font-size: 2rem;
+	font-weight: bold;
+}
+.article-desc {
+	color: gray;
+}
+.text-bold {
+	font-weight: bold;
+}
