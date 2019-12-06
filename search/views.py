@@ -353,6 +353,11 @@ class FetchRepliesView(APIView):
         facet = res['facet_counts']
         results = plot_data(response, {}, facet)
 
+        original_tweet_url = localhost + 'id:' + query
+        data = urllib.request.urlopen(inurl)
+        res = json.load(data)
+        doc = res['response'].get('docs', [None])[0]
+        results['original_tweet'] = doc
         return Response(results)
 
 class FetchUserTweetsView(APIView):
