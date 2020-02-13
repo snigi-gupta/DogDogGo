@@ -1,0 +1,74 @@
+# GIT commands cheatsheet
+
+#check current branch
+git branch
+
+#switch to new branch
+git checkout <branchname> (ex: git checkout dev)
+
+#delete a branch
+#ensure you are NOT in the branch you want to delete
+git branch -d <branchname> (ex: git branch -d mydev)
+
+#create new branch (a copy of dev branch)
+#ensure you are in the 'dev' branch
+git checkout -b <newbranchname> (ex: git checkout -b mydev)
+you will be swicthed to the new branch and a new branch (copy of dev) is created.
+
+#pull new changes 
+git pull <remotename> <branchname> (ex: git pull raunaq master or git pull raunaq dev)
+
+#add new remote
+git remote add <newremotename> <url> (ex: git remote add raunaq git@github.com:snigi-gupta/DogDogGo.git)
+
+#list the remotes
+git remote -v
+Output:
+origin  git@github.com:snigi-gupta/DogDogGo.git (fetch)
+origin  git@github.com:snigi-gupta/DogDogGo.git (push)
+raunaq  git@github.com:raunaqjain/DogDogGo.git (fetch)
+raunaq  git@github.com:raunaqjain/DogDogGo.git (push)
+
+#check status
+git status
+
+#push changes
+git push <remotename> <branchname> (ex: git push raunaq mydev)
+
+#pull changes
+git pull <remotename> <branchname> (ex: git pull raunaq dev)
+
+#add file to git repository
+git add <filename(s)> (ex: git add file1, file2, file3)
+
+#commit changes
+git commit -m "<message>" (ex: git commit -m "Added git cheatsheet")
+
+#stash current changes
+git stash
+
+#pop stash
+git stash pop
+
+#reset HEAD
+git reset HEAD <filename>
+
+
+#how to commit changes to git local branch
+#check branch: git branch
+#check status: git status
+#add file: git add <filename(s)>
+#check status again: git status (color changes from red to green)
+#commit file: git commit -m "<message>"
+#check status: git status (ready to be pushed)
+#push changes to local branch: git push <remotename> <branchname> (ex: git push raunaq mydev)
+#changes successfully pushed from your local repo to git local branch
+
+
+#how to push changes to development branch
+#switch to development branch: git checkout <branchname> (ex: git checkout dev)
+#pull new changes to dev branch: git pull <remotename> <branchname> (ex: git pull raunaq dev)
+#merge changes of local git branch with development git branch: git merge <branchname> (ex: git merge mydev)
+#check status: git status
+#push changes to development branch: git push <remotename> <branchname> (ex: git push raunaq dev)
+#delete your branch now that the changes are merged: git branch -d <branchname> (ex: git branch -d mydev)

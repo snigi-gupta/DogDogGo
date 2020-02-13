@@ -21,4 +21,5 @@ political_search_engine/static/bundles/*
 #Ignore migration files
 **/migrations/*
 
-experiments/
+#Ignore experiments folder
+experiments/*

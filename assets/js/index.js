@@ -1,12 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import { BrowserRouter } from 'react-router-dom'
+import App from './app.js'
+import reducer from './reducer'
 
-function Demo() {
-  return <h1>Everything seems to be running!</h1>;
-}
+let createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
+let store = createStoreWithMiddleware(reducer)
 
-const element = <Demo/>;
 ReactDOM.render(
-  element,
-  document.getElementById('myapp')
+	<Provider store={store}>
+		<BrowserRouter>
+			<App />
+		</BrowserRouter>
+	</Provider>,
+	document.getElementById('myapp')
 );

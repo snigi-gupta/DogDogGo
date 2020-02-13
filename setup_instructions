@@ -3,7 +3,7 @@
 cd /tmp/
 1. curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh -o install_nvm.sh | bash
 
-2. For windows: source ~/.profile
+2. For ubuntu: source ~/.profile
    For mac: source ~/.bash_profile
 
 3. nvm install --lts
@@ -26,4 +26,8 @@ pip install -r requirements.txt
 npm install
 
 # XNOTE: create binaries later
-./node_modules/.bin/webpack --config webpack.config.js
+./node_modules/.bin/webpack --config webpack.config.js --watch
+# the watch flag is to keep the server running to pick up changes made in dev env. DON'T USE IT IN PRODUCTION
+
+# for running the django server
+python manage.py runserver

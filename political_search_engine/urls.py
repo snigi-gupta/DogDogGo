@@ -19,7 +19,15 @@ from django.conf.urls import url
 from django.views import generic
 
 urlpatterns = [
-		url(r'^$',generic.TemplateView.as_view(template_name='index.html')),
-    path('search/', include('search.urls')),
+		# We should add authentication in case of api endpoints
+    path('api/search/', include('search.urls')),
     path('admin/', admin.site.urls),
+		url(r'^$', generic.TemplateView.as_view(template_name='index.html')),
+		url('usageanalytics/', generic.TemplateView.as_view(template_name='usageanalytics.html')),
+		url('timeanalytics/', generic.TemplateView.as_view(template_name='timeanalytics.html')),
+		url('locanalytics/', generic.TemplateView.as_view(template_name='locanalytics.html')),
+		url('search/', generic.TemplateView.as_view(template_name='index.html')),
+		url('about/', generic.TemplateView.as_view(template_name='index.html')),
+		url('tweet/', generic.TemplateView.as_view(template_name='index.html')),
+		url('poi/', generic.TemplateView.as_view(template_name='index.html')),
 ]
