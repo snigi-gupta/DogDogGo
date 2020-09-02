@@ -1,6 +1,8 @@
 # DogDogGo - Information Retrieval Project 4
 This project is aimed at creating a tweet search engine. The goal of the project is to successfully crawl tweets from twitter, index them and then create a graphic user interface allowing a user to search tweets. Furthermore, the project contributes in analyzing the corpus informing the user about the impact of the tweets in the twitter sphere.</br>
 
+You can find the Demo of this application here https://www.youtube.com/watch?v=hruluDxwTU8
+
   Platform            | Tech-Stack
 -------------         | -------------
 Front-End             | ReacJS and Reduc, CSS, HTML
