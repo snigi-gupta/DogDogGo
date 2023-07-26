@@ -5,7 +5,7 @@ You can find the Demo of this application here https://www.youtube.com/watch?v=h
 
   Platform            | Tech-Stack
 -------------         | -------------
-Front-End             | ReacJS and Reduc, CSS, HTML
+Front-End             | ReactJS and Redux, CSS, HTML
 Back-End              | Django, Python
 Search Platform       | Solr/Lucene
 Translation Platform  | Microsoft Azure
